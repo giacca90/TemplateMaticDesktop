@@ -1,0 +1,22 @@
+/* En tu archivo de estilos CSS (puede ser styles.css o styles.scss) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px; /* Ajusta según tus necesidades */
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: grey;
+  }
+  
+  thead tr:first-child {
+    font-weight: bold;
+    background-color: grey;
+  }
+  

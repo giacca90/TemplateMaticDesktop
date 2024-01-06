@@ -1,0 +1,39 @@
+<h3>Bienvenido!!!</h3>
+<p>
+  Esta pequeña App sirve para rellenar formularios con los datos de los
+  clientes.
+</p>
+<p>Para empezar, selecciona la carpeta de tus plantillas:</p>
+<input
+  type="file"
+  id="input"
+  name="plantillas"
+  webkitdirectory
+  directory
+  multiple
+/>
+<div id="res">
+  <ul>
+    @if(PS.getTemp() === undefined) {
+    <p>ELIGE UNA CARPETA</p>
+    } @else { @if (PS.getTemp().length === 0) {
+    <p>ESTA CARPETA NO TIENE ARCHIVOS VALIDOS!!!</p>
+    }@else {
+    <br />
+    <input
+      type="text"
+      id="buscador"
+      placeholder="Busca plantilla"
+      (input)="busca()"
+    />
+    <br />
+    <br />
+    @for(plantilla of plantillasBuscadas; track plantilla.id){
+    <li>
+      <a routerLink="/plantilla/{{ plantilla.id }}" [queryParams]="plantilla"
+        >{{ plantilla.id }}: {{ plantilla.nombre }}</a
+      >
+    </li>
+    } } }
+  </ul>
+</div>

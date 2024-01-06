@@ -1,0 +1,16 @@
+<div class="col-12">
+  <div class="header">
+    <h1>TemplateMatic!!!</h1>
+  </div>
+  <div class="controller">
+    <a [routerLink]="['/']" ></a>
+    <nav>
+      <button class="btn" routerLink="/">Home</button>
+      <button class="btn" routerLink="/status">Status</button>
+      <button class="btn" routerLink="/agregar">Agregar</button>
+    </nav>
+    
+  </div>
+  <!-- <app-home></app-home> -->
+  <router-outlet></router-outlet>
+</div>
