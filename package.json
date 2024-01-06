@@ -1,10 +1,13 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "name": "template-matic-desktop",
+  "version": "0.0.1",
+  "description": "App desktop de rellenado de plantillas",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "cd ng && ng build --output-path dist --base-href . && cd .. && electron-forge start",
+    "package": "cd ng && ng build --output-path dist --base-href . && cd .. && electron-forge package",
+    "make": "cd ng && ng build --output-path dist --base-href . && cd .. && electron-forge make",
+    "make-win": "cd ng && ng build --output-path dist --base-href . && cd .. && electron-forge make --platform=win32"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -14,9 +17,18 @@
     "tutorial",
     "demo"
   ],
-  "author": "GitHub",
+  "author": "Giacca90",
   "license": "CC0-1.0",
   "devDependencies": {
+    "@electron-forge/cli": "^7.2.0",
+    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-rpm": "^7.2.0",
+    "@electron-forge/maker-squirrel": "^7.2.0",
+    "@electron-forge/maker-zip": "^7.2.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "electron": "^28.1.1"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0"
   }
 }
