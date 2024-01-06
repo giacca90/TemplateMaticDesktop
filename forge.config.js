@@ -1,14 +1,17 @@
 module.exports = {
   packagerConfig: {
     asar: true,
+    icon: 'favicon-linux.png'
   },
   rebuildConfig: {},
+
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
       config: {
         authors: 'Giacca90',
-        description: 'App desktop de rellenado de plantillas'
+        description: 'App desktop de rellenado de plantillas',
+        setupIcon: 'favicon.ico'
       },
     },
     {
@@ -17,11 +20,15 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        iconUrl: 'favicon-linux.png'
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        iconUrl: 'favicon-linux.png'
+      },
     },
   ],
   plugins: [

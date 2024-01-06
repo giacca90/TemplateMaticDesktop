@@ -9,6 +9,17 @@
     "make": "cd ng && ng build --output-path dist --base-href . && cd .. && electron-forge make",
     "make-win": "cd ng && ng build --output-path dist --base-href . && cd .. && electron-forge make --platform=win32"
   },
+  "build": {
+    "win": {
+      "icon": "favicon.ico"
+    },
+    "mac": {
+      "icon": "favicon-mac.icns"
+    },
+    "linux": {
+      "icon": "favicon-linux.png"
+    }
+  },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
     "Electron",
