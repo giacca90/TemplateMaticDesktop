@@ -1,7 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: 'favicon-linux.png'
+    icon: 'favicon.ico'
   },
   rebuildConfig: {},
 
