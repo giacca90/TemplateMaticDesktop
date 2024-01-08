@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PlantillaComponent } from '../modelos/plantilla/plantilla.component';
 import { PlantillaService, Plantilla } from '../services/plantilla.service';
+import { IpcService } from '../services/ipc-render.service';
+
 
 @Component({
   selector: 'app-home',
@@ -13,7 +15,7 @@ import { PlantillaService, Plantilla } from '../services/plantilla.service';
 export class HomeComponent implements OnInit {
   public plantillasBuscadas: Array<Plantilla> = [];
 
-  constructor(public PS: PlantillaService) {  }
+  constructor(public PS: PlantillaService, private ipcService: IpcService, private cdRef: ChangeDetectorRef) {  }
 
   ngOnInit(): void {
     if (this.PS.getTemp()) {
@@ -23,6 +25,15 @@ export class HomeComponent implements OnInit {
     input.addEventListener('change', () => {
       this.PS.setTemp([]);
       if (input.files) {
+        
+        /* let reader = new FileReader();
+        reader.readAsArrayBuffer(input.files[0]);
+        reader.onload = () => {
+         let res:ArrayBuffer = reader.result as ArrayBuffer;
+         console.log("FileReader: "+typeof res+"\n"+res.toString() )
+          this.ipcService.send("Files", {res, name: input.files[0].name});
+        }; */
+        
         let plantillas:Plantilla[] = [];
         for (let i = 0; i < input.files.length; i++) {
           if (

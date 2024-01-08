@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu } = require('electron')
-const path = require('node:path')
+const { app, BrowserWindow, Menu, ipcMain } = require('electron');
+const path = require('node:path');
+const fs = require('fs');
 
 function createWindow () {
   // Create the browser window.
@@ -9,6 +10,8 @@ function createWindow () {
     height: 600,
     icon: path.join(__dirname, 'favicon.ico'),
     webPreferences: {
+      contextIsolation: false,
+      nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js')
     }
   })
@@ -17,7 +20,7 @@ function createWindow () {
   mainWindow.loadFile('ng/dist/browser/index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
@@ -33,6 +36,21 @@ app.whenReady().then(() => {
   })
 })
 
+/* ipcMain.on("Files", (event, {ArrayBuffer, name}) => {
+  const filePath = `./temp/${name}`;
+  fs.writeFile(filePath, Buffer.from(ArrayBuffer), (err) => {
+    if (err) {
+      console.error(err);
+      event.sender.send('error-escribir-archivo', err.message);
+      return;
+    }
+    // Crear un nuevo objeto File con la ruta del archivo
+    const reconstructedFile = new File([filePath], name);
+    const ruta = reconstructedFile.path;
+    alert("RUTA: "+ruta);
+  });  
+}); */
+
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
@@ -44,4 +62,6 @@ app.on('window-all-closed', function () {
 // code. You can also put them in separate files and require them here.
 
 //const menu = Menu.buildFromTemplate(template)
-Menu.setApplicationMenu(null)
+Menu.setApplicationMenu(null);
+
+
