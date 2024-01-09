@@ -123,7 +123,7 @@ export class PlantillaComponent implements OnInit {
     }
   }
 
-  async EditDocx(file: File) {
+  EditDocx(file: File) {
     console.log('Desde EditDocx');
     //prueba con XML
     const reader = new FileReader();
@@ -146,39 +146,7 @@ export class PlantillaComponent implements OnInit {
     };
     reader.readAsArrayBuffer(file);
 
-    //prueba con file2html
-    try {
-      // Espera a que se resuelva la Promesa y obtén el contenido del archivo en formato ArrayBuffer
-      const content = await file.arrayBuffer();
-
-      // Lee el archivo y conviértelo a HTML
-      const fileData = await file2html.read({
-        fileBuffer: content,
-        meta: {
-          mimeType:
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        },
-      });
-
-      // Extrae los estilos y el contenido del archivo
-      const { styles, content: fileContent } = fileData.getData();
-
-      // Concatena estilos y contenido
-      const html = styles + fileContent;
-
-//      console.log('RESULTADO: \n' + html);
-
-      let view = document.getElementById('contentContainer');
-      view.innerHTML = html;
-    } catch (error) {
-      // Maneja cualquier error que pueda ocurrir durante el proceso
-      console.error('Error:', error);
-
-      // Imprime información adicional sobre el error específico
-      if (error.code === 'file2html.errors.unsupportedFile') {
-        console.error('El formato del archivo no es compatible.');
-      }
-    }
+    this.creaVistaDocx(file);
   }
 
   buscaClaves(fileString: string) {
@@ -269,5 +237,41 @@ export class PlantillaComponent implements OnInit {
         document.body.removeChild(link);
       });
     });
+  }
+
+  async creaVistaDocx(file:File) {
+    //prueba con file2html
+    try {
+      // Espera a que se resuelva la Promesa y obtén el contenido del archivo en formato ArrayBuffer
+      const content = await file.arrayBuffer();
+
+      // Lee el archivo y conviértelo a HTML
+      const fileData = await file2html.read({
+        fileBuffer: content,
+        meta: {
+          mimeType:
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        },
+      });
+
+      // Extrae los estilos y el contenido del archivo
+      const { styles, content: fileContent } = fileData.getData();
+
+      // Concatena estilos y contenido
+      const html = styles + fileContent;
+
+//      console.log('RESULTADO: \n' + html);
+
+      let view = document.getElementById('contentContainer');
+      view.innerHTML = html;
+    } catch (error) {
+      // Maneja cualquier error que pueda ocurrir durante el proceso
+      console.error('Error:', error);
+
+      // Imprime información adicional sobre el error específico
+      if (error.code === 'file2html.errors.unsupportedFile') {
+        console.error('El formato del archivo no es compatible.');
+      }
+    }
   }
 }
