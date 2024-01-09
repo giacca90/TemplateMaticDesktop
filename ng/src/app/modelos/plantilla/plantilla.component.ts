@@ -69,6 +69,7 @@ export class PlantillaComponent implements OnInit {
   async EditOdt(file: File) {
     console.log('Desde EditOdt');
     //prueba con XML
+    let vista = null;
     const reader = new FileReader();
 
     reader.onload = async (e: ProgressEvent<FileReader>) => {
@@ -77,6 +78,19 @@ export class PlantillaComponent implements OnInit {
 
       // Accede al contenido del archivo content.xml
       const contentXml = await zip.file('content.xml').async('text');
+      vista = await zip.file("Thumbnails/thumbnail.png").async('blob');
+      reader.onload = () => {
+        // Crea un elemento de imagen y establece su fuente como los datos de la imagen
+        const imgElement = document.createElement('img');
+        imgElement.src = reader.result as string
+        // Establece el ancho del elemento img al ancho del div
+        imgElement.style.width = '100%';
+        // Agrega la imagen al div
+        view.innerHTML = '';
+        view.appendChild(imgElement);
+      };
+      reader.readAsDataURL(vista);
+        
       this.path = 'content.xml';
 
       // Ahora puedes procesar el contenido XML como desees
@@ -88,11 +102,17 @@ export class PlantillaComponent implements OnInit {
 //      console.log('Resultado XML: \n' + this.SxmlDoc);
 
       this.buscaClaves(this.SxmlDoc);
+      let view = document.getElementById('contentContainer');
+      const imgElement = document.createElement('img');
+        imgElement.src = vista;
+        imgElement.alt = "Cargando..."
+      view.innerHTML = '';
+      view.appendChild(imgElement);
     };
 
     reader.readAsArrayBuffer(file);
 
-    //prueba con file2html
+/*     //prueba con file2html
     try {
       // Espera a que se resuelva la Promesa y obtén el contenido del archivo en formato ArrayBuffer
       const content = await file.arrayBuffer();
@@ -121,7 +141,7 @@ export class PlantillaComponent implements OnInit {
         console.error('El formato del archivo no es compatible.');
       }
     }
-  }
+ */  }
 
   EditDocx(file: File) {
     console.log('Desde EditDocx');
@@ -263,7 +283,7 @@ export class PlantillaComponent implements OnInit {
 //      console.log('RESULTADO: \n' + html);
 
       let view = document.getElementById('contentContainer');
-      view.innerHTML = html;
+      view.innerHTML = '<div id="contenido" style="width: 100%; height: 100%; overflow: hidden;">'+html+'</div>';
     } catch (error) {
       // Maneja cualquier error que pueda ocurrir durante el proceso
       console.error('Error:', error);
