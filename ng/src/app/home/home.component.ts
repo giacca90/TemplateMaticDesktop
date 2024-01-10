@@ -1,9 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PlantillaComponent } from '../modelos/plantilla/plantilla.component';
 import { PlantillaService, Plantilla } from '../services/plantilla.service';
-import { IpcService } from '../services/ipc-render.service';
-
 
 @Component({
   selector: 'app-home',
@@ -15,7 +13,7 @@ import { IpcService } from '../services/ipc-render.service';
 export class HomeComponent implements OnInit {
   public plantillasBuscadas: Array<Plantilla> = [];
 
-  constructor(public PS: PlantillaService, private ipcService: IpcService, private cdRef: ChangeDetectorRef) {  }
+  constructor(public PS: PlantillaService) {  }
 
   ngOnInit(): void {
     if (this.PS.getTemp()) {

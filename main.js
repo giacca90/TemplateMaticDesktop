@@ -10,8 +10,6 @@ function createWindow () {
     height: 600,
     icon: path.join(__dirname, 'favicon.ico'),
     webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js')
     }
   })
