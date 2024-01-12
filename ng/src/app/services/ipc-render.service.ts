@@ -1,12 +1,43 @@
 import { Injectable } from "@angular/core";
-import { IpcRenderer} from "electron";
+import { IpcRenderer } from "electron";
 
 @Injectable({
   providedIn: "root"
 })
 export class IpcService {
-  private ipc: IpcRenderer;
+  private _ipc: IpcRenderer | undefined;
+
   constructor() {
+    if (window.require) {
+      try {
+        this._ipc = window.require('electron').ipcRenderer;
+      } catch (e) {
+        throw e;
+      }
+    } else {
+      console.warn('Electron\'s IPC was not loaded');
+    }
+  }
+
+  public on(channel: string, listener: any): void {
+    if (!this._ipc) {
+      return;
+    }
+    this._ipc.on(channel, listener);
+  }
+
+  public send(channel: string, ...args): void {
+    if (!this._ipc) {
+      return;
+    }
+    this._ipc.send(channel, ...args);
+  }
+
+
+
+   /*private ipc: IpcRenderer;
+  constructor() {
+    //If window.require is available, it means that electron is running, then ipc will be loaded.
     if (window.require) {
       try {
         this.ipc = window.require("electron").ipcRenderer;
@@ -17,6 +48,7 @@ export class IpcService {
       console.warn("Electron IPC was not loaded");
     }
   }
+
   public on(channel: string, listener: any): void {
     if (!this.ipc) {
       return;
@@ -43,5 +75,5 @@ export class IpcService {
       return;
     }
     this.ipc.removeAllListeners(channel);
-  }
+  } */
 }

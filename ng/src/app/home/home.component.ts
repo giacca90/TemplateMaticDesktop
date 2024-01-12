@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PlantillaComponent } from '../modelos/plantilla/plantilla.component';
 import { PlantillaService, Plantilla } from '../services/plantilla.service';
+import { IpcService } from '../services/ipc-render.service'
 
 @Component({
   selector: 'app-home',
@@ -13,7 +14,7 @@ import { PlantillaService, Plantilla } from '../services/plantilla.service';
 export class HomeComponent implements OnInit {
   public plantillasBuscadas: Array<Plantilla> = [];
 
-  constructor(public PS: PlantillaService) {  }
+  constructor(public PS: PlantillaService, private ipcRenderer: IpcService) {  }
 
   ngOnInit(): void {
     if (this.PS.getTemp()) {
@@ -39,6 +40,12 @@ export class HomeComponent implements OnInit {
             input.files[i].name.endsWith('docx')
           ) {
             plantillas.push(new Plantilla(i + 1, input.files[i]));
+            let reader = new FileReader();
+            reader.readAsDataURL(input.files[i]);
+            reader.onload = () => {
+              this.ipcRenderer.send("Files", reader.result);              
+            }
+            
           }
         }
         this.PS.setTemp(plantillas);

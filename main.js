@@ -10,7 +10,9 @@ function createWindow () {
     height: 600,
     icon: path.join(__dirname, 'favicon.ico'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      contextIsolation: false,
+      nodeIntegration: true,
+//      preload: path.join(__dirname, 'preload.js')
     }
   })
 
@@ -34,20 +36,9 @@ app.whenReady().then(() => {
   })
 })
 
-/* ipcMain.on("Files", (event, {ArrayBuffer, name}) => {
-  const filePath = `./temp/${name}`;
-  fs.writeFile(filePath, Buffer.from(ArrayBuffer), (err) => {
-    if (err) {
-      console.error(err);
-      event.sender.send('error-escribir-archivo', err.message);
-      return;
-    }
-    // Crear un nuevo objeto File con la ruta del archivo
-    const reconstructedFile = new File([filePath], name);
-    const ruta = reconstructedFile.path;
-    alert("RUTA: "+ruta);
-  });  
-}); */
+ipcMain.on("Files", (event, files) => {
+  console.log("Recibido en Electron: "+typeof files);
+}); 
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
