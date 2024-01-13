@@ -31,11 +31,16 @@ export class Plantilla {
   nombre: string;
   address: string;
 
-  constructor(_id: number, _file: File) {
+  constructor(_id: number, _file: File, _nombre?: string, _address?: string) {
     this.id = _id;
     this.file = _file;
-    this.nombre = _file.name;
-    this.address = _file.webkitRelativePath;
+    if(_file !== null) {
+      this.nombre = _file.name;
+      this.address = _file.webkitRelativePath;
+    }else{
+      this.nombre = _nombre;
+      this.address = _address;
+    }
   }
 
   toString() {

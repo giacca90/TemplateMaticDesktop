@@ -44,6 +44,7 @@ export class HomeComponent implements OnInit {
         }
       });
     }
+    
   }
 
   busca() {
@@ -63,9 +64,17 @@ export class HomeComponent implements OnInit {
   abreDialog() {
     this.ipcRenderer.send("openDialog");
     this.ipcRenderer.on('archivos-de-carpeta', (event, files) => {
-      for(let file of files) {
-        console.log(file.name);
+      let plantillas: Plantilla[] = [];
+      for(let i=0; i<files.length; i++) {
+        if (
+          files[i].name.endsWith('odt') ||
+          files[i].name.endsWith('docx')
+        ) {
+          plantillas.push(new Plantilla(i+1,null,files[i].name,files[i].ruta))
+        }
       }
+      this.PS.setTemp(plantillas);
+      this.plantillasBuscadas = plantillas;
     })
   }
 }

@@ -44,10 +44,10 @@ function createWindow () {
       const fileBuffer = await fs.readFile(filePath);
       files.push({
         name: filename,
+        ruta: filePath,
         buffer: fileBuffer
       });
     }
-  
     return files;
   }
 }
