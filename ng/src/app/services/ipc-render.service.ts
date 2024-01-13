@@ -33,6 +33,12 @@ export class IpcService {
     this._ipc.send(channel, ...args);
   }
 
+  public isElectron():boolean {
+    if(!this._ipc) {
+      return false;
+    }
+    return true;
+  }
 
 
    /*private ipc: IpcRenderer;

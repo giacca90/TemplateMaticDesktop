@@ -4,7 +4,10 @@
   clientes.
 </p>
 <p>Para empezar, selecciona la carpeta de tus plantillas:</p>
-<input
+@if(this.ipcRenderer.isElectron()){
+  <button type="submit" (click)="abreDialog()">Elije una carpeta...</button>
+}@else {
+  <input
   type="file"
   id="input"
   name="plantillas"
@@ -12,6 +15,8 @@
   directory
   multiple
 />
+}
+
 <div id="res">
   <ul>
     @if(PS.getTemp() === undefined) {

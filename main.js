@@ -1,7 +1,7 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const path = require('node:path');
-const fs = require('fs');
+const fs = require('node:fs/promises');
 
 function createWindow () {
   // Create the browser window.
@@ -20,7 +20,36 @@ function createWindow () {
   mainWindow.loadFile('ng/dist/browser/index.html')
 
   // Open the DevTools.
-mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
+
+  ipcMain.on("openDialog", (event) => {
+    dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory']
+    }).then(async (result) => {
+      console.log("RUTA: "+result.filePaths);
+      if (!result.canceled && result.filePaths.length > 0) {
+        const folderPath = result.filePaths[0];
+        const files = await readFilesInFolder(folderPath);
+        mainWindow.webContents.send('archivos-de-carpeta', files);
+      }
+    })
+  })
+
+  async function readFilesInFolder(folderPath) {
+    const files = [];
+    const filenames = await fs.readdir(folderPath);
+  
+    for (const filename of filenames) {
+      const filePath = path.join(folderPath, filename);
+      const fileBuffer = await fs.readFile(filePath);
+      files.push({
+        name: filename,
+        buffer: fileBuffer
+      });
+    }
+  
+    return files;
+  }
 }
 
 // This method will be called when Electron has finished
@@ -39,6 +68,8 @@ app.whenReady().then(() => {
 ipcMain.on("Files", (event, files) => {
   console.log("Recibido en Electron: "+typeof files);
 }); 
+
+
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
