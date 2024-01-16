@@ -1,7 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const path = require('node:path');
-const fs = require('node:fs/promises');
+const fs = require('fs');
 
 function createWindow () {
   // Create the browser window.
@@ -35,13 +35,23 @@ function createWindow () {
     })
   })
 
+  ipcMain.on("busca", (_evento, ruta) => {
+    let file = fs.readFileSync(ruta);
+    let arraybuffer = file.buffer.slice(
+      file.byteOffset,
+      file.byteOffset + file.byteLength
+    );
+//    ipcMain.emit("arraybuffer",arraybuffer);
+    mainWindow.webContents.send('arraybuffer',arraybuffer);
+  })
+
   async function readFilesInFolder(folderPath) {
     const files = [];
-    const filenames = await fs.readdir(folderPath);
+    const filenames = await fs.readdirSync(folderPath);
   
     for (const filename of filenames) {
       const filePath = path.join(folderPath, filename);
-      const fileBuffer = await fs.readFile(filePath);
+      const fileBuffer = await fs.readFileSync(filePath);
       files.push({
         name: filename,
         ruta: filePath,

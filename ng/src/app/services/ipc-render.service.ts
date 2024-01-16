@@ -40,6 +40,16 @@ export class IpcService {
     return true;
   }
 
+  public clear() {
+    if(!this._ipc) {
+      return;
+    }
+    this._ipc.removeAllListeners("busca");
+    this._ipc.removeAllListeners("arraybuffer");
+
+    this._ipc.removeAllListeners("openDialog");
+    this._ipc.removeAllListeners("archivos-de-carpeta");
+  }
 
    /*private ipc: IpcRenderer;
   constructor() {

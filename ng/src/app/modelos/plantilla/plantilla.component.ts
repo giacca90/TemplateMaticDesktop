@@ -1,7 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PlantillaService } from '../../services/plantilla.service';
+import { Plantilla, PlantillaService } from '../../services/plantilla.service';
 import { ClienteDinamico, ClientesService} from '../../services/clientes.service';
+import { IpcService } from '../../services/ipc-render.service'
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import * as file2html from 'file2html';
@@ -30,20 +31,29 @@ export class PlantillaComponent implements OnInit {
   path: string;
   selected: string;
 
-  constructor(public PS: PlantillaService, public CS: ClientesService) {
+  constructor(public PS: PlantillaService, public CS: ClientesService, IPC: IpcService, private cdr: ChangeDetectorRef) {
     
     this.id = this.route.snapshot.queryParams['id'];
     console.log('id: ' + this.id);
-    this.file = PS.getPlantillaForId(this.id);
-    this.nombre = this.file.name;
-    console.log('nombre: ' + this.nombre);
-    this.ruta = this.file.webkitRelativePath;
-    console.log('ruta: ' + this.ruta);
-
-    if (this.ruta.endsWith('odt')) {
-      this.EditOdt(this.file);
-    } else if ( this.ruta.endsWith('docx')) {
-      this.EditDocx(this.file);
+    let plantilla:Plantilla = PS.getPlantillaForId(this.id);
+    this.file = plantilla.file;
+    if(this.file === null) {
+      IPC.send("busca", plantilla.address);
+      IPC.on("arraybuffer", (_event, arraybuffer:ArrayBuffer) => {
+        this.file = new File ([arraybuffer], plantilla.nombre);
+        plantilla.file = this.file;
+        this.nombre = plantilla.nombre;
+        console.log('nombre: ' + this.nombre);
+        this.ruta = plantilla.address;
+        console.log('ruta: ' + this.ruta);
+    
+        if (this.ruta.endsWith('odt')) {
+          this.EditOdt(this.file);
+        } else if ( this.ruta.endsWith('docx')) {
+          this.EditDocx(this.file);
+        }
+        IPC.clear();
+      })
     }
   }
 
@@ -141,7 +151,9 @@ export class PlantillaComponent implements OnInit {
         console.error('El formato del archivo no es compatible.');
       }
     }
- */  }
+ */  
+    this.cdr.detectChanges();
+  }
 
   EditDocx(file: File) {
     console.log('Desde EditDocx');
@@ -167,6 +179,7 @@ export class PlantillaComponent implements OnInit {
     reader.readAsArrayBuffer(file);
 
     this.creaVistaDocx(file);
+    this.cdr.detectChanges();
   }
 
   buscaClaves(fileString: string) {
@@ -185,6 +198,7 @@ export class PlantillaComponent implements OnInit {
         }
       }
     }
+    this.cdr.detectChanges();
     console.log('Se han encontrado ' + this.claves.length + ' claves');
     for (let clave of this.claves) {
       console.log(clave);

@@ -15,10 +15,10 @@ export class PlantillaService {
     return this.plantillas;
   }
 
-  getPlantillaForId(id: number): File {
+  getPlantillaForId(id: number): Plantilla {
     for (let i = 0; i < this.plantillas.length; i++) {
       if (this.plantillas[i].id == id) {
-        return this.plantillas[i].file;
+        return this.plantillas[i];
       }
     }
     return null;
