@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Plantilla, PlantillaService } from '../../services/plantilla.service';
 import { ClienteDinamico, ClientesService} from '../../services/clientes.service';
@@ -20,7 +20,7 @@ file2html.config({
   templateUrl: './plantilla.component.html',
   styleUrl: './plantilla.component.css',
 })
-export class PlantillaComponent implements OnInit {
+export class PlantillaComponent {
   route: ActivatedRoute = inject(ActivatedRoute);
   id: number;
   file: File;
@@ -32,7 +32,7 @@ export class PlantillaComponent implements OnInit {
   selected: string;
 
   constructor(public PS: PlantillaService, public CS: ClientesService, IPC: IpcService, private cdr: ChangeDetectorRef) {
-    
+    IPC.clear();
     this.id = this.route.snapshot.queryParams['id'];
     console.log('id: ' + this.id);
     let plantilla:Plantilla = PS.getPlantillaForId(this.id);
@@ -41,7 +41,6 @@ export class PlantillaComponent implements OnInit {
       IPC.send("busca", plantilla.address);
       IPC.on("arraybuffer", (_event, arraybuffer:ArrayBuffer) => {
         this.file = new File ([arraybuffer], plantilla.nombre);
-        plantilla.file = this.file;
         this.nombre = plantilla.nombre;
         console.log('nombre: ' + this.nombre);
         this.ruta = plantilla.address;
@@ -52,7 +51,6 @@ export class PlantillaComponent implements OnInit {
         } else if ( this.ruta.endsWith('docx')) {
           this.EditDocx(this.file);
         }
-        IPC.clear();
       })
     }
   }
@@ -74,7 +72,6 @@ export class PlantillaComponent implements OnInit {
     }
     
   }
-  ngOnInit(): void {}
 
   async EditOdt(file: File) {
     console.log('Desde EditOdt');
@@ -121,37 +118,6 @@ export class PlantillaComponent implements OnInit {
     };
 
     reader.readAsArrayBuffer(file);
-
-/*     //prueba con file2html
-    try {
-      // Espera a que se resuelva la Promesa y obtén el contenido del archivo en formato ArrayBuffer
-      const content = await file.arrayBuffer();
-
-      // Lee el archivo y conviértelo a HTML
-      const fileData = await file2html.read({
-        fileBuffer: content,
-        meta: { mimeType: 'application/vnd.oasis.opendocument.text' },
-      });
-
-      // Extrae los estilos y el contenido del archivo
-      const { styles, content: fileContent } = fileData.getData();
-
-      // Concatena estilos y contenido
-      const html = styles + fileContent;
-
-//      console.log('RESULTADO: \n' + html);
-      let view = document.getElementById('contentContainer');
-      view.innerHTML = html;
-    } catch (error) {
-      // Maneja cualquier error que pueda ocurrir durante el proceso
-      console.error('Error:', error);
-
-      // Imprime información adicional sobre el error específico
-      if (error.code === 'file2html.errors.unsupportedFile') {
-        console.error('El formato del archivo no es compatible.');
-      }
-    }
- */  
     this.cdr.detectChanges();
   }
 
