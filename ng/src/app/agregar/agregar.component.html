@@ -1,6 +1,6 @@
 <h3>Aquí es donde cargas y administras el listado de clientes.</h3>
 <h3>Carga un CSV valido </h3><p>(Un archivo CSV con encabezado con el nombre de las colunmas)</p>
-@if(this.ipc.isElectron) {
+@if(this.ipc.isElectron()) {
     <button type="submit" (click)="precargaCSV()">Elije un CSV valido.</button>
 }@else {
     <input type="file" (change)="precargaCSV()" id="CSV" accept=".csv">

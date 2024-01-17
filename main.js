@@ -52,18 +52,23 @@ function createWindow () {
 
   ipcMain.on("PersistenciaCarpeta", (_event) => {
     const storedFolderPath = store.get('carpetaSeleccionada');
-    let files = fs.readdirSync(storedFolderPath);
-    let result = [];
-    for(let file of files) {
-      result.push(storedFolderPath+"/"+file)
+    if(storedFolderPath && storedFolderPath.length > 0) {
+      let files = fs.readdirSync(storedFolderPath);
+      let result = [];
+      for(let file of files) {
+        result.push(storedFolderPath+"/"+file)
+      }
+      mainWindow.webContents.send("Carpeta", result);
     }
-    mainWindow.webContents.send("Carpeta", result);
   })
 
   ipcMain.on('PersistenciaCSV', (_event) => {
     const CSVGuardado = store.get('CSV');
-    const file = fs.readFileSync(CSVGuardado).toString();
+    if(CSVGuardado && CSVGuardado.length > 0) {
+      const file = fs.readFileSync(CSVGuardado).toString();
     mainWindow.webContents.send('CSVRecuperado', file);
+
+    }
   })
 
   ipcMain.on("busca", (_evento, ruta) => {
