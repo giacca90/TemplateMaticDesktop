@@ -24,7 +24,7 @@ function createWindow () {
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 
-  ipcMain.on("openDialog", (event) => {
+  ipcMain.on("openDialog", (_event) => {
     dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory']
     }).then(async (result) => {
@@ -38,6 +38,18 @@ function createWindow () {
     })
   })
 
+  ipcMain.on("DialogCSV", (_event) => {
+    dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile', 'showHiddenFiles'],
+      filters: [{ name: 'CSV', extensions: ['csv', 'CSV'] },]
+    }).then((result) => {
+      console.log("CSV: "+result.filePaths);
+      store.set('CSV',result.filePaths[0]);
+      const file = fs.readFileSync(result.filePaths[0]).toString();
+      mainWindow.webContents.send('CSV', file);
+    }).catch(err => console.error("Error en DialogCSV: \n"+err))
+  })
+
   ipcMain.on("PersistenciaCarpeta", (_event) => {
     const storedFolderPath = store.get('carpetaSeleccionada');
     let files = fs.readdirSync(storedFolderPath);
@@ -46,6 +58,12 @@ function createWindow () {
       result.push(storedFolderPath+"/"+file)
     }
     mainWindow.webContents.send("Carpeta", result);
+  })
+
+  ipcMain.on('PersistenciaCSV', (_event) => {
+    const CSVGuardado = store.get('CSV');
+    const file = fs.readFileSync(CSVGuardado).toString();
+    mainWindow.webContents.send('CSVRecuperado', file);
   })
 
   ipcMain.on("busca", (_evento, ruta) => {

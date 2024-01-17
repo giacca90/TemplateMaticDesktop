@@ -1,6 +1,11 @@
 <h3>Aquí es donde cargas y administras el listado de clientes.</h3>
 <h3>Carga un CSV valido </h3><p>(Un archivo CSV con encabezado con el nombre de las colunmas)</p>
-<input type="file" (change)="cargaCSV()" id="CSV" accept=".csv">
+@if(this.ipc.isElectron) {
+    <button type="submit" (click)="precargaCSV()">Elije un CSV valido.</button>
+}@else {
+    <input type="file" (change)="precargaCSV()" id="CSV" accept=".csv">
+}
+
 <div>
     @if(clientes.length > 0) {
         <table>
@@ -23,39 +28,4 @@
     }@else {
         <p>no hay clientes</p>
        }
-
-
-    <!-- Versión con Cliente -->
-   <!-- @if(clientes.length > 0) {
-        <table>
-            @for(cliente of this.clientes; track cliente.id) {
-                @if(cliente.id === 0) {
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Nombre REML</th>
-                            <th>Numero REML</th>
-                            <th>Dirección</th>
-                            <th>Correo Electrónico</th>
-                            <th>Fecha de Nacimiento</th>
-                        </tr>
-                    </thead>
-                }@else {
-                    <tbody>
-                        <td>{{ cliente.nombre }}</td>
-                        <td>{{ cliente.apellido }}</td>
-                        <td>{{ cliente.nombreREML }}</td>
-                        <td>{{ cliente.numeroREML }}</td>
-                        <td>{{ cliente.direccion }}</td>
-                        <td>{{ cliente.correo }}</td>
-                        <td>{{ cliente.fechaNacimiento }}</td>
-                    </tbody>
-                }
-            }
-        </table>
-        
-   }@else {
-    <p>no hay clientes</p>
-   } -->
 </div>
