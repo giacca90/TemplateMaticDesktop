@@ -70,54 +70,43 @@ export class PlantillaComponent {
         }
       }
     }
-    
   }
 
   async EditOdt(file: File) {
     console.log('Desde EditOdt');
-    //prueba con XML
     let vista = null;
     const reader = new FileReader();
+    // Descomprime el archivo .odt
+    const zip = await JSZip().loadAsync(file);
+    // Obtener la lista de archivos
+    const archivos = Object.keys(zip.files);
+    // Procesar cada archivo
+    archivos.forEach(async (nombreArchivo) => {
+      if(nombreArchivo.endsWith('xml')) {
+        const contenido = await zip.file(nombreArchivo).async('text');
+        // Ahora puedes procesar el contenido XML como desees
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(contenido, 'text/xml');
+        const serializer = new XMLSerializer();
+        this.SxmlDoc = serializer.serializeToString(xmlDoc);
+        this.buscaClaves(this.SxmlDoc);
+      }
+    });
 
-    reader.onload = async (e: ProgressEvent<FileReader>) => {
-      // Descomprime el archivo .odt
-      const zip = await JSZip().loadAsync(this.file);
-
-      // Accede al contenido del archivo content.xml
-      const contentXml = await zip.file('content.xml').async('text');
-      vista = await zip.file("Thumbnails/thumbnail.png").async('blob');
-      reader.onload = () => {
-        // Crea un elemento de imagen y establece su fuente como los datos de la imagen
-        const imgElement = document.createElement('img');
-        imgElement.src = reader.result as string
-        // Establece el ancho del elemento img al ancho del div
-        imgElement.style.width = '100%';
-        // Agrega la imagen al div
-        view.innerHTML = '';
-        view.appendChild(imgElement);
-      };
-      reader.readAsDataURL(vista);
-        
-      this.path = 'content.xml';
-
-      // Ahora puedes procesar el contenido XML como desees
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(contentXml, 'text/xml');
-      const serializer = new XMLSerializer();
-      this.SxmlDoc = serializer.serializeToString(xmlDoc);
-
-//      console.log('Resultado XML: \n' + this.SxmlDoc);
-
-      this.buscaClaves(this.SxmlDoc);
+    vista = await zip.file("Thumbnails/thumbnail.png").async('blob');
+    reader.readAsDataURL(vista);
+    reader.onload = () => {
       let view = document.getElementById('contentContainer');
+      // Crea un elemento de imagen y establece su fuente como los datos de la imagen
       const imgElement = document.createElement('img');
-        imgElement.src = vista;
-        imgElement.alt = "Cargando..."
+      imgElement.src = reader.result as string
+      imgElement.alt = "Cargando..."
+      // Establece el ancho del elemento img al ancho del div
+      imgElement.style.width = '100%';
+      // Agrega la imagen al div
       view.innerHTML = '';
       view.appendChild(imgElement);
     };
-
-    reader.readAsArrayBuffer(file);
     this.cdr.detectChanges();
   }
 
