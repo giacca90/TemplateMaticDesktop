@@ -2,6 +2,8 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
+const Store = require('electron-store');
+const store = new Store();
 
 function createWindow () {
   // Create the browser window.
@@ -27,6 +29,7 @@ function createWindow () {
       properties: ['openDirectory']
     }).then(async (result) => {
       console.log("RUTA: "+result.filePaths);
+      store.set('carpetaSeleccionada', result.filePaths[0]);
       if (!result.canceled && result.filePaths.length > 0) {
         const folderPath = result.filePaths[0];
         const files = await readFilesInFolder(folderPath);
@@ -35,23 +38,32 @@ function createWindow () {
     })
   })
 
+  ipcMain.on("PersistenciaCarpeta", (_event) => {
+    const storedFolderPath = store.get('carpetaSeleccionada');
+    let files = fs.readdirSync(storedFolderPath);
+    let result = [];
+    for(let file of files) {
+      result.push(storedFolderPath+"/"+file)
+    }
+    mainWindow.webContents.send("Carpeta", result);
+  })
+
   ipcMain.on("busca", (_evento, ruta) => {
     let file = fs.readFileSync(ruta);
     let arraybuffer = file.buffer.slice(
       file.byteOffset,
       file.byteOffset + file.byteLength
     );
-//    ipcMain.emit("arraybuffer",arraybuffer);
     mainWindow.webContents.send('arraybuffer',arraybuffer);
   })
 
   async function readFilesInFolder(folderPath) {
     const files = [];
-    const filenames = await fs.readdirSync(folderPath);
+    const filenames = fs.readdirSync(folderPath);
   
     for (const filename of filenames) {
       const filePath = path.join(folderPath, filename);
-      const fileBuffer = await fs.readFileSync(filePath);
+      const fileBuffer = fs.readFileSync(filePath);
       files.push({
         name: filename,
         ruta: filePath,

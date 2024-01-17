@@ -19,6 +19,19 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     if (this.PS.getTemp()) {
       this.plantillasBuscadas = this.PS.getTemp();
+    }else{
+      let plantillas:Plantilla[] = [];
+      this.ipcRenderer.send("PersistenciaCarpeta");
+      this.ipcRenderer.on("Carpeta", (_event, files:string[]) => {
+        for(let i=0; i<files.length; i++) {
+          console.log("Prueba: "+files[i]);
+          if(files[i].endsWith("odt") || files[i].endsWith("docx")) 
+          plantillas.push(new Plantilla(i+1, null, files[i].split('/').slice(-1)[0], files[i]));
+        }
+        this.PS.setTemp(plantillas);
+        this.plantillasBuscadas = plantillas;
+        this.cdr.detectChanges();
+      })
     }
     let input= document.getElementById('input') as HTMLInputElement;
     if(input) {
@@ -60,6 +73,7 @@ export class HomeComponent implements OnInit {
         this.plantillasBuscadas.push(plantilla);
       }
     }
+    this.cdr.detectChanges();
   }
 
   abreDialog() {
