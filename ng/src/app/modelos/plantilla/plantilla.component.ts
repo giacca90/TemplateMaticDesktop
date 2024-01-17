@@ -45,39 +45,16 @@ export class PlantillaComponent {
         console.log('nombre: ' + this.nombre);
         this.ruta = plantilla.address;
         console.log('ruta: ' + this.ruta);
-    
-        if (this.ruta.endsWith('odt')) {
-          this.EditOdt(this.file);
-        } else if ( this.ruta.endsWith('docx')) {
-          this.EditDocx(this.file);
-        }
-      })
+
+        this.abrirArchivo();
+      });
     }
   }
 
-  completa() {
-    if(this.selected) {
-      const seleccionado = parseInt(this.selected);
-      const cliente: ClienteDinamico = this.CS.getClienteForId(seleccionado);
-      console.log("Cliente obtenido: "+cliente.toString());
-      for(let atributo of cliente.atributos) {
-        for(let clave of this.claves) {
-          if(clave === atributo.clave) {
-            let a = document.getElementById(clave) as HTMLInputElement;
-            a.value = atributo.valor;
-            a.removeAttribute('placeholder');
-          }
-        }
-      }
-    }
-  }
-
-  async EditOdt(file: File) {
-    console.log('Desde EditOdt');
-    let vista = null;
-    const reader = new FileReader();
+  
+  async abrirArchivo() {;
     // Descomprime el archivo .odt
-    const zip = await JSZip().loadAsync(file);
+    const zip = await JSZip().loadAsync(this.file);
     // Obtener la lista de archivos
     const archivos = Object.keys(zip.files);
     // Procesar cada archivo
@@ -93,6 +70,18 @@ export class PlantillaComponent {
       }
     });
 
+    if(this.file.name.endsWith('odt')) {
+      this.vistaOdt();
+    }
+    if(this.file.name.endsWith('docx')) {
+      this.vistaDocx();
+    }
+  }
+
+  async vistaOdt() {
+    let vista = null;
+    const zip = await JSZip().loadAsync(this.file);
+    const reader = new FileReader();
     vista = await zip.file("Thumbnails/thumbnail.png").async('blob');
     reader.readAsDataURL(vista);
     reader.onload = () => {
@@ -110,31 +99,40 @@ export class PlantillaComponent {
     this.cdr.detectChanges();
   }
 
-  EditDocx(file: File) {
-    console.log('Desde EditDocx');
-    //prueba con XML
-    const reader = new FileReader();
+  async vistaDocx() {
+    //prueba con file2html
+    try {
+      // Espera a que se resuelva la Promesa y obtén el contenido del archivo en formato ArrayBuffer
+      const content = await this.file.arrayBuffer();
 
-    reader.onload = async (e: ProgressEvent<FileReader>) => {
-      // Descomprime el archivo .odt
-      const zip = await JSZip().loadAsync(this.file);
-      // Accede al contenido del archivo document.xml
-      const documentXml = await zip.file('word/document.xml').async('text');
-      this.path = 'word/document.xml';
-      // Ahora puedes procesar el contenido XML como desees
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(documentXml, 'text/xml');
-      const serializer = new XMLSerializer();
-      this.SxmlDoc = serializer.serializeToString(xmlDoc);
+      // Lee el archivo y conviértelo a HTML
+      const fileData = await file2html.read({
+        fileBuffer: content,
+        meta: {
+          mimeType:
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        },
+      });
 
-//      console.log('Resultado XML: \n' + this.SxmlDoc);
+      // Extrae los estilos y el contenido del archivo
+      const { styles, content: fileContent } = fileData.getData();
 
-      this.buscaClaves(this.SxmlDoc);
-    };
-    reader.readAsArrayBuffer(file);
+      // Concatena estilos y contenido
+      const html = styles + fileContent;
 
-    this.creaVistaDocx(file);
-    this.cdr.detectChanges();
+//      console.log('RESULTADO: \n' + html);
+
+      let view = document.getElementById('contentContainer');
+      view.innerHTML = '<div id="contenido" style="width: 100%; height: 100%; overflow: hidden;">'+html+'</div>';
+    } catch (error) {
+      // Maneja cualquier error que pueda ocurrir durante el proceso
+      console.error('Error:', error);
+
+      // Imprime información adicional sobre el error específico
+      if (error.code === 'file2html.errors.unsupportedFile') {
+        console.error('El formato del archivo no es compatible.');
+      }
+    }
   }
 
   buscaClaves(fileString: string) {
@@ -227,40 +225,22 @@ export class PlantillaComponent {
       });
     });
   }
-
-  async creaVistaDocx(file:File) {
-    //prueba con file2html
-    try {
-      // Espera a que se resuelva la Promesa y obtén el contenido del archivo en formato ArrayBuffer
-      const content = await file.arrayBuffer();
-
-      // Lee el archivo y conviértelo a HTML
-      const fileData = await file2html.read({
-        fileBuffer: content,
-        meta: {
-          mimeType:
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        },
-      });
-
-      // Extrae los estilos y el contenido del archivo
-      const { styles, content: fileContent } = fileData.getData();
-
-      // Concatena estilos y contenido
-      const html = styles + fileContent;
-
-//      console.log('RESULTADO: \n' + html);
-
-      let view = document.getElementById('contentContainer');
-      view.innerHTML = '<div id="contenido" style="width: 100%; height: 100%; overflow: hidden;">'+html+'</div>';
-    } catch (error) {
-      // Maneja cualquier error que pueda ocurrir durante el proceso
-      console.error('Error:', error);
-
-      // Imprime información adicional sobre el error específico
-      if (error.code === 'file2html.errors.unsupportedFile') {
-        console.error('El formato del archivo no es compatible.');
+  
+  completa() {
+    if(this.selected) {
+      const seleccionado = parseInt(this.selected);
+      const cliente: ClienteDinamico = this.CS.getClienteForId(seleccionado);
+      console.log("Cliente obtenido: "+cliente.toString());
+      for(let atributo of cliente.atributos) {
+        for(let clave of this.claves) {
+          if(clave === atributo.clave) {
+            let a = document.getElementById(clave) as HTMLInputElement;
+            a.value = atributo.valor;
+            a.removeAttribute('placeholder');
+          }
+        }
       }
     }
   }
+
 }
