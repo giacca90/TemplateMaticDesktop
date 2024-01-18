@@ -27,7 +27,7 @@ export class PlantillaComponent {
   nombre: string;
   ruta: string;
   claves: string[] = [];
-  SxmlDoc: string;
+  nuevoFile: File;
   path: string;
   selected: string;
 
@@ -41,6 +41,7 @@ export class PlantillaComponent {
       IPC.send("busca", plantilla.address);
       IPC.on("arraybuffer", (_event, arraybuffer:ArrayBuffer) => {
         this.file = new File ([arraybuffer], plantilla.nombre);
+        this.nuevoFile = this.file;
         this.nombre = plantilla.nombre;
         console.log('nombre: ' + this.nombre);
         this.ruta = plantilla.address;
@@ -48,12 +49,13 @@ export class PlantillaComponent {
 
         this.abrirArchivo();
       });
+    }else{
+      this.abrirArchivo();
     }
   }
 
-  
   async abrirArchivo() {;
-    // Descomprime el archivo .odt
+    // Descomprime el archivo
     const zip = await JSZip().loadAsync(this.file);
     // Obtener la lista de archivos
     const archivos = Object.keys(zip.files);
@@ -65,8 +67,8 @@ export class PlantillaComponent {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(contenido, 'text/xml');
         const serializer = new XMLSerializer();
-        this.SxmlDoc = serializer.serializeToString(xmlDoc);
-        this.buscaClaves(this.SxmlDoc);
+        const SxmlDoc = serializer.serializeToString(xmlDoc);
+        this.buscaClaves(SxmlDoc);
       }
     });
 
@@ -158,7 +160,7 @@ export class PlantillaComponent {
     }
   }
 
-  creaDocumento() {
+  async creaDocumento() {
     let parejas: Array<{ clave: string; valor: string }> = [];
     for (let clave of this.claves) {
       let ele = document.getElementById(clave) as HTMLInputElement;
@@ -171,40 +173,62 @@ export class PlantillaComponent {
       console.log('Clave: ' + pareja.clave + ' Valor: ' + pareja.valor);
     }
 
+    // Descomprime el archivo
+    const zip = await JSZip().loadAsync(this.file);
+    // Obtener la lista de archivos
+    const archivos = Object.keys(zip.files);
+    // Procesar cada archivo
+    archivos.forEach(async (nombreArchivo) => {
+      if(nombreArchivo.endsWith('xml')) {
+        const contenido = await zip.file(nombreArchivo).async('text');
+        // Ahora puedes procesar el contenido XML como desees
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(contenido, 'text/xml');
+        const serializer = new XMLSerializer();
+        const SxmlDoc = serializer.serializeToString(xmlDoc);
+        this.sustituyeClaves(SxmlDoc, parejas, nombreArchivo);
+      }
+    })
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(this.nuevoFile);
+    link.download = 'rellenado_' + this.file.name; // Puedes cambiar el nombre según el tipo de archivo
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+  }
+
+  sustituyeClaves(SxmlDoc: string, parejas: Array<{ clave: string; valor: string }>, nombreArchivo: string) {
     let documento: string = '';
     let index: number = 0;
     let indexTemp: number = 0;
     while (index !== -1) {
-      index = this.SxmlDoc.indexOf('{{', index);
+      index = SxmlDoc.indexOf('{{', index);
       if (index !== -1) {
-        let indexEnd = this.SxmlDoc.indexOf('}}', index);
+        let indexEnd = SxmlDoc.indexOf('}}', index);
         if (indexEnd !== -1) {
-          let clave = this.SxmlDoc.substring(index + 2, indexEnd);
+          let clave = SxmlDoc.substring(index + 2, indexEnd);
           clave = clave.replace(/<.*?>/g, '');
           let valor = '';
           parejas.forEach((par) => {
-            if (par.clave === clave) {
-              valor = par.valor;
-            }
-          });
-          documento =
-            documento + this.SxmlDoc.substring(indexTemp, index) + valor;
-
-          index = indexEnd;
-          indexTemp = indexEnd + 2;
+              if (par.clave === clave) {
+                valor = par.valor;
+              }
+            });
+            documento =
+              documento + SxmlDoc.substring(indexTemp, index) + valor;
+  
+            index = indexEnd;
+            indexTemp = indexEnd + 2;
+          }
         }
       }
+      documento = documento + SxmlDoc.substring(indexTemp);
+  //    console.log('DOCUMENTO: \n\n' + documento);
+      this.replaceXmlInCopy(this.nuevoFile, documento, nombreArchivo);
     }
-    documento = documento + this.SxmlDoc.substring(indexTemp);
-//    console.log('DOCUMENTO: \n\n' + documento);
-    this.replaceXmlInCopy(this.file, documento, this.path);
-  }
 
-  replaceXmlInCopy(
-    originalBlob: File,
-    modifiedXml: string,
-    outputPath: string
-  ) {
+    replaceXmlInCopy(originalBlob: File, modifiedXml: string, outputPath: string) {
     const zip = new JSZip();
 
     // Lee el contenido del archivo original
@@ -213,16 +237,9 @@ export class PlantillaComponent {
       originalZip.file(outputPath, modifiedXml);
 
       // Crea el nuevo archivo
-      originalZip.generateAsync({ type: 'blob' }).then((newBlob) => {
-        // Puedes usar newBlob como prefieras, por ejemplo, guardarlo o descargarlo
-        // Aquí un ejemplo de descarga
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(newBlob);
-        link.download = 'rellenado_' + this.file.name; // Puedes cambiar el nombre según el tipo de archivo
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      });
+      originalZip.generateAsync({ type: 'blob' }).then((newBlob: File) => {
+        this.nuevoFile = newBlob;
+      }); 
     });
   }
   
