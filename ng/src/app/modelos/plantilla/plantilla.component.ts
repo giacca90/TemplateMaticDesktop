@@ -60,7 +60,7 @@ export class PlantillaComponent {
     // Obtener la lista de archivos
     const archivos = Object.keys(zip.files);
     // Procesar cada archivo
-    archivos.forEach(async (nombreArchivo) => {
+    for(let nombreArchivo of archivos) { 
       if(nombreArchivo.endsWith('xml')) {
         const contenido = await zip.file(nombreArchivo).async('text');
         // Ahora puedes procesar el contenido XML como desees
@@ -70,7 +70,7 @@ export class PlantillaComponent {
         const SxmlDoc = serializer.serializeToString(xmlDoc);
         this.buscaClaves(SxmlDoc);
       }
-    });
+    };
 
     if(this.file.name.endsWith('odt')) {
       this.vistaOdt();
@@ -161,6 +161,7 @@ export class PlantillaComponent {
   }
 
   async creaDocumento() {
+    console.log("Comienza creaDocumento");
     let parejas: Array<{ clave: string; valor: string }> = [];
     for (let clave of this.claves) {
       let ele = document.getElementById(clave) as HTMLInputElement;
@@ -174,11 +175,14 @@ export class PlantillaComponent {
     }
 
     // Descomprime el archivo
+    console.log("Comienza a abrir el archivo");
     const zip = await JSZip().loadAsync(this.file);
     // Obtener la lista de archivos
+    console.log("Obtiene lista de archivos");
     const archivos = Object.keys(zip.files);
     // Procesar cada archivo
-    archivos.forEach(async (nombreArchivo) => {
+    console.log("Comienza a analizar cada archivo");
+    for (let nombreArchivo of archivos) {
       if(nombreArchivo.endsWith('xml')) {
         const contenido = await zip.file(nombreArchivo).async('text');
         // Ahora puedes procesar el contenido XML como desees
@@ -186,9 +190,11 @@ export class PlantillaComponent {
         const xmlDoc = parser.parseFromString(contenido, 'text/xml');
         const serializer = new XMLSerializer();
         const SxmlDoc = serializer.serializeToString(xmlDoc);
-        this.sustituyeClaves(SxmlDoc, parejas, nombreArchivo);
+//        console.log("Archivo:\n"+SxmlDoc);
+        await this.sustituyeClaves(SxmlDoc, parejas, nombreArchivo);
       }
-    })
+    }
+    console.log("Comienza la descarga del documento modificado");
     const link = document.createElement('a');
     link.href = URL.createObjectURL(this.nuevoFile);
     link.download = 'rellenado_' + this.file.name; // Puedes cambiar el nombre según el tipo de archivo
@@ -198,7 +204,8 @@ export class PlantillaComponent {
     
   }
 
-  sustituyeClaves(SxmlDoc: string, parejas: Array<{ clave: string; valor: string }>, nombreArchivo: string) {
+  async sustituyeClaves(SxmlDoc: string, parejas: Array<{ clave: string; valor: string }>, nombreArchivo: string) {
+    console.log("Comienza sustituyeClaves");
     let documento: string = '';
     let index: number = 0;
     let indexTemp: number = 0;
@@ -225,22 +232,20 @@ export class PlantillaComponent {
       }
       documento = documento + SxmlDoc.substring(indexTemp);
   //    console.log('DOCUMENTO: \n\n' + documento);
-      this.replaceXmlInCopy(this.nuevoFile, documento, nombreArchivo);
+      await this.replaceXmlInCopy(this.nuevoFile, documento, nombreArchivo);
     }
 
-    replaceXmlInCopy(originalBlob: File, modifiedXml: string, outputPath: string) {
+    async replaceXmlInCopy(originalBlob: File, modifiedXml: string, outputPath: string) {
     const zip = new JSZip();
-
+    console.log("Comienza replaceXml");
     // Lee el contenido del archivo original
-    zip.loadAsync(originalBlob).then((originalZip) => {
-      // Sustituye el contenido XML modificado
-      originalZip.file(outputPath, modifiedXml);
-
-      // Crea el nuevo archivo
-      originalZip.generateAsync({ type: 'blob' }).then((newBlob: File) => {
-        this.nuevoFile = newBlob;
-      }); 
-    });
+    const originalZip = await zip.loadAsync(originalBlob)
+    // Sustituye el contenido XML modificado
+    console.log("Sustituye el contenido XML modificado")
+    originalZip.file(outputPath, modifiedXml);
+    // Crea el nuevo archivo
+    this.nuevoFile = await originalZip.generateAsync({ type: 'blob' }) as File
+    console.log("crea nuevo archivo");
   }
   
   completa() {
@@ -259,5 +264,4 @@ export class PlantillaComponent {
       }
     }
   }
-
 }
