@@ -5,3 +5,9 @@
     margin: 0,0,0,0;
     padding: 0;
 }
+
+.marco {
+    width: 90%;
+    margin: auto;
+    margin-top: 5px;
+}

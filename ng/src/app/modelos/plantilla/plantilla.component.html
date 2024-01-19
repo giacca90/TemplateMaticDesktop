@@ -30,14 +30,15 @@
                 <input type="text" placeholder="{{clave}}" id="{{clave}}" value="" >
                 <br>
             }
-            <button type="submit" (click)="creaDocumento()">Crea Documento</button>
+            <button type="submit" class="creaDocumento" (click)="creaDocumento()">Crea Documento</button>
+            @if(this.estadoCreacionArchivo) {
+   
+                <div class="progress-container">
+                    <p>Espere por favor...</p>
+                    <div class="progress-bar" [style.width]="progresoCreacionArchivo + '%'"></div>
+                </div>
+            }
         </div>
     </div>   
 </div>
 
-@if(this.estadoCreacionArchivo) {
-    <p>Espere por favor...</p>
-    <div class="progress-container">
-        <div class="progress-bar" [style.width]="progresoCreacionArchivo + '%'"></div>
-    </div>
-}

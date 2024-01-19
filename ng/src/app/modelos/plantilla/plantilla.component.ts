@@ -75,6 +75,7 @@ export class PlantillaComponent {
         this.buscaClaves(SxmlDoc);
       }
       this.progresoCargaInicial = ((i + 1) / archivos.length) * 100;
+      this.cdr.detectChanges();
     };
 
     if(this.file.name.endsWith('odt')) {
@@ -169,6 +170,7 @@ export class PlantillaComponent {
   async creaDocumento() {
     console.log("Comienza creaDocumento");
     this.estadoCreacionArchivo = true;
+    this.cdr.detectChanges();
     let parejas: Array<{ clave: string; valor: string }> = [];
     for (let clave of this.claves) {
       let ele = document.getElementById(clave) as HTMLInputElement;
@@ -200,6 +202,7 @@ export class PlantillaComponent {
 //        console.log("Archivo:\n"+SxmlDoc);
         await this.sustituyeClaves(SxmlDoc, parejas, archivos[i]);
         this.progresoCreacionArchivo = ((i + 1) / archivos.length) * 100;
+        this.cdr.detectChanges();
       }
     }
     console.log("Comienza la descarga del documento modificado");
