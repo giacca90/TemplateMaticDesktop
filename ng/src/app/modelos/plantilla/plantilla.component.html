@@ -8,6 +8,7 @@
         <div class="col" id="view">
             <div id="contentContainer">
                 <!-- Contenido del primer div aquí -->
+                <img src="assets/carga.gif" class="gifCarga" alt="Cargando...">
             </div>
         </div>
         <div class="col" id="form">
@@ -17,26 +18,28 @@
                     <div class="progress-bar" [style.width]="progresoCargaInicial + '%'"></div>
                 </div>
             }
-            @if(this.CS.clientes.length > 0) {
-                <label for="opciones">Selecciona una opción: </label>
-                <ng-select id="opciones" name="opciones" placeholder="Escribe o selecciona" [(ngModel)]="selected" (change)="completa()">
-                    <ng-option value="" disabled selected hidden></ng-option>
-                    @for(cliente of this.CS.clientes; track cliente) {
-                        <ng-option value="{{cliente.id}}">{{cliente.toString()}}</ng-option>
-                    }
-                </ng-select>
-            }
-            @for (clave of this.claves; track clave) {
-                <input type="text" placeholder="{{clave}}" id="{{clave}}" value="" >
-                <br>
-            }
-            <button type="submit" class="creaDocumento" (click)="creaDocumento()">Crea Documento</button>
-            @if(this.estadoCreacionArchivo) {
-   
-                <div class="progress-container">
-                    <p>Espere por favor...</p>
-                    <div class="progress-bar" [style.width]="progresoCreacionArchivo + '%'"></div>
-                </div>
+            @if(this.progresoCargaInicial === 100) {
+                @if(this.CS.clientes.length > 0) {
+                    <label for="opciones">Selecciona una opción: </label>
+                    <ng-select id="opciones" name="opciones" placeholder="Escribe o selecciona" [(ngModel)]="selected" (change)="completa()">
+                        <ng-option value="" disabled selected hidden></ng-option>
+                        @for(cliente of this.CS.clientes; track cliente) {
+                            <ng-option value="{{cliente.id}}">{{cliente.toString()}}</ng-option>
+                        }
+                    </ng-select>
+                }
+                @for (clave of this.claves; track clave) {
+                    <input type="text" placeholder="{{clave}}" id="{{clave}}" value="" >
+                    <br>
+                }
+                <button type="submit" class="creaDocumento" (click)="creaDocumento()">Crea Documento</button>
+                @if(this.estadoCreacionArchivo) {
+       
+                    <div class="progress-container">
+                        <p>Espere por favor...</p>
+                        <div class="progress-bar" [style.width]="progresoCreacionArchivo + '%'"></div>
+                    </div>
+                }
             }
         </div>
     </div>   
