@@ -30,6 +30,10 @@ export class PlantillaComponent {
   nuevoFile: File;
   path: string;
   selected: string;
+  estadoCargaInicial: boolean = true;
+  progresoCargaInicial: number = 0;
+  estadoCreacionArchivo: boolean = false;
+  progresoCreacionArchivo: number = 0;
 
   constructor(public PS: PlantillaService, public CS: ClientesService, IPC: IpcService, private cdr: ChangeDetectorRef) {
     IPC.clear();
@@ -60,9 +64,9 @@ export class PlantillaComponent {
     // Obtener la lista de archivos
     const archivos = Object.keys(zip.files);
     // Procesar cada archivo
-    for(let nombreArchivo of archivos) { 
-      if(nombreArchivo.endsWith('xml')) {
-        const contenido = await zip.file(nombreArchivo).async('text');
+    for(let i=0; i<archivos.length; i++) { 
+      if(archivos[i].endsWith('xml')) {
+        const contenido = await zip.file(archivos[i]).async('text');
         // Ahora puedes procesar el contenido XML como desees
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(contenido, 'text/xml');
@@ -70,6 +74,7 @@ export class PlantillaComponent {
         const SxmlDoc = serializer.serializeToString(xmlDoc);
         this.buscaClaves(SxmlDoc);
       }
+      this.progresoCargaInicial = ((i + 1) / archivos.length) * 100;
     };
 
     if(this.file.name.endsWith('odt')) {
@@ -153,6 +158,7 @@ export class PlantillaComponent {
         }
       }
     }
+    this.estadoCargaInicial = false;
     this.cdr.detectChanges();
     console.log('Se han encontrado ' + this.claves.length + ' claves');
     for (let clave of this.claves) {
@@ -162,6 +168,7 @@ export class PlantillaComponent {
 
   async creaDocumento() {
     console.log("Comienza creaDocumento");
+    this.estadoCreacionArchivo = true;
     let parejas: Array<{ clave: string; valor: string }> = [];
     for (let clave of this.claves) {
       let ele = document.getElementById(clave) as HTMLInputElement;
@@ -182,16 +189,17 @@ export class PlantillaComponent {
     const archivos = Object.keys(zip.files);
     // Procesar cada archivo
     console.log("Comienza a analizar cada archivo");
-    for (let nombreArchivo of archivos) {
-      if(nombreArchivo.endsWith('xml')) {
-        const contenido = await zip.file(nombreArchivo).async('text');
+    for (let i=0; i< archivos.length; i++) {
+      if(archivos[i].endsWith('xml')) {
+        const contenido = await zip.file(archivos[i]).async('text');
         // Ahora puedes procesar el contenido XML como desees
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(contenido, 'text/xml');
         const serializer = new XMLSerializer();
         const SxmlDoc = serializer.serializeToString(xmlDoc);
 //        console.log("Archivo:\n"+SxmlDoc);
-        await this.sustituyeClaves(SxmlDoc, parejas, nombreArchivo);
+        await this.sustituyeClaves(SxmlDoc, parejas, archivos[i]);
+        this.progresoCreacionArchivo = ((i + 1) / archivos.length) * 100;
       }
     }
     console.log("Comienza la descarga del documento modificado");

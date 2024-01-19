@@ -10,7 +10,13 @@
                 <!-- Contenido del primer div aquí -->
             </div>
         </div>
-        <div class="col" id="form"> 
+        <div class="col" id="form">
+            @if(this.estadoCargaInicial) {
+                <p>Espere por favor...</p>
+                <div class="progress-container">
+                    <div class="progress-bar" [style.width]="progresoCargaInicial + '%'"></div>
+                </div>
+            }
             @if(this.CS.clientes.length > 0) {
                 <label for="opciones">Selecciona una opción: </label>
                 <ng-select id="opciones" name="opciones" placeholder="Escribe o selecciona" [(ngModel)]="selected" (change)="completa()">
@@ -19,16 +25,6 @@
                         <ng-option value="{{cliente.id}}">{{cliente.toString()}}</ng-option>
                     }
                 </ng-select>
-                
-                <!-- <label for="opciones">Selecciona una opción: </label>
-                <select id="opciones" name="opciones" (change)="completa()">
-                <option value="" disabled selected hidden>Clientes...</option>
-                @for(cliente of this.CS.clientes; track cliente) {
-                    <option value="{{cliente.id}}">{{cliente.toString()}}</option>
-                }
-                </select>
-                <br>
-                <br> -->
             }
             @for (clave of this.claves; track clave) {
                 <input type="text" placeholder="{{clave}}" id="{{clave}}" value="" >
@@ -36,7 +32,12 @@
             }
             <button type="submit" (click)="creaDocumento()">Crea Documento</button>
         </div>
-    </div>
-    
+    </div>   
 </div>
 
+@if(this.estadoCreacionArchivo) {
+    <p>Espere por favor...</p>
+    <div class="progress-container">
+        <div class="progress-bar" [style.width]="progresoCreacionArchivo + '%'"></div>
+    </div>
+}
