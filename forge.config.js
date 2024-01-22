@@ -9,6 +9,8 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
+        certificateFile: './cert.pfx',
+        certificatePassword: process.env.CERTIFICATE_PASSWORD,
         authors: 'Giacca90',
         description: 'App desktop de rellenado de plantillas',
         setupIcon: 'favicon.ico'
