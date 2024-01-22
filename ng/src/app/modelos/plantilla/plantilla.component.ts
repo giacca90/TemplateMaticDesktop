@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Plantilla, PlantillaService } from '../../services/plantilla.service';
 import {
@@ -24,7 +24,7 @@ file2html.config({
   templateUrl: './plantilla.component.html',
   styleUrl: './plantilla.component.css',
 })
-export class PlantillaComponent implements OnDestroy{
+export class PlantillaComponent {
   route: ActivatedRoute = inject(ActivatedRoute);
   id: number;
   file: File;
@@ -39,6 +39,7 @@ export class PlantillaComponent implements OnDestroy{
   estadoCreacionArchivo: boolean = false;
   progresoCreacionArchivo: number = 0;
   worker: Worker
+  numeroDocumento: boolean = false;
 
   constructor(
     public PS: PlantillaService,
@@ -67,9 +68,6 @@ export class PlantillaComponent implements OnDestroy{
       this.abrirArchivo();
     }
   }
-  ngOnDestroy(): void {
-    this.worker.terminate()
-  }
 
   async abrirArchivo() {
     // Descomprime el archivo
@@ -90,6 +88,7 @@ export class PlantillaComponent implements OnDestroy{
       this.progresoCargaInicial = ((i + 1) / archivos.length) * 100;
       this.cdr.detectChanges();
     }
+    this.cambiaColor();
 
     if (this.file.name.endsWith('odt')) {
       this.vistaOdt();
@@ -152,6 +151,9 @@ export class PlantillaComponent implements OnDestroy{
           clave = clave.replace(/<.*?>/g, '');
           if (!this.claves.includes(clave)) {
             this.claves.push(clave);
+            if(clave === '$$$') {
+              this.numeroDocumento = true;
+            }
           }
           index = indexEnd;
         }
@@ -160,8 +162,40 @@ export class PlantillaComponent implements OnDestroy{
     this.estadoCargaInicial = false;
     this.cdr.detectChanges();
     console.log('Se han encontrado ' + this.claves.length + ' claves');
+  }
+
+  cambiaColor() {
     for (let clave of this.claves) {
-      console.log(clave);
+      console.log("Clave: "+clave);
+      let campo = document.getElementById(clave) as HTMLInputElement
+      campo.addEventListener("change", () => {
+        if(campo.value.length === 0) {
+          campo.classList.remove("campoValido");
+          campo.classList.add("campoVacio");
+        }else{
+          campo.classList.remove("campoVacio");
+          campo.classList.add("campoValido");
+        }
+      })
+    }
+    let numeroDocAuto = document.getElementById('numeroDocAuto') as HTMLInputElement;
+    let campoNumeroDocumento = document.getElementById('$$$');
+    if(numeroDocAuto) {
+      numeroDocAuto.addEventListener("change", () => {
+        if(numeroDocAuto) {
+          if(numeroDocAuto.checked === true) {
+            if(campoNumeroDocumento) {
+              campoNumeroDocumento.classList.remove("campoVacio");
+              campoNumeroDocumento.classList.add("campoValido");
+            }
+          }else{
+            if(campoNumeroDocumento) {
+              campoNumeroDocumento.classList.remove("campoValido");
+              campoNumeroDocumento.classList.add("campoVacio");
+            }
+          }
+        }
+      })
     }
   }
 
@@ -169,18 +203,25 @@ export class PlantillaComponent implements OnDestroy{
     console.log('Comienza creaDocumento');
     this.estadoCreacionArchivo = true;
     this.cdr.detectChanges();
+    let fecha:Date = new Date()
+    let numeroDocumento = fecha.getFullYear().toString()+fecha.getMonth().toString()+fecha.getDate().toString()+fecha.getHours().toString()+fecha.getMinutes().toString()+fecha.getSeconds().toString();
     let parejas: Array<{ clave: string; valor: string }> = [];
     for (let clave of this.claves) {
       let ele = document.getElementById(clave) as HTMLInputElement;
-      let val = ele.value;
-      let par = { clave: clave, valor: val };
-      parejas.push(par);
+      let val:string
+      if(clave === '$$$' && this.numeroDocumento === true) {
+        val = numeroDocumento;
+      }else {
+        val = ele.value;
+      }
+    let par = { clave: clave, valor: val };
+    parejas.push(par);
     }
-    console.log('PAREJAS:');
+/*     console.log('PAREJAS:');
     for (let pareja of parejas) {
       console.log('Clave: ' + pareja.clave + ' Valor: ' + pareja.valor);
     }
-
+ */
     // Descomprime el archivo
     console.log('Comienza a abrir el archivo');
     const zip = await JSZip().loadAsync(this.file);
@@ -275,6 +316,8 @@ export class PlantillaComponent implements OnDestroy{
           if (clave === atributo.clave) {
             let a = document.getElementById(clave) as HTMLInputElement;
             a.value = atributo.valor;
+            a.classList.remove("campoVacio");
+            a.classList.add("campoValido");
             a.removeAttribute('placeholder');
           }
         }

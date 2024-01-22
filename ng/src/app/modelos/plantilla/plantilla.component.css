@@ -16,8 +16,22 @@ h1{
 }
 
 #form {
-    width: 40%;
-    height: 60%;
+  width: 40%;
+  height: 60%;
+  text-align: left;
+  margin-left: 10px;
+}
+
+.campoVacio{
+  border: 2px solid red;
+}
+
+.campoValido{
+  border: 2px solid green;
+}
+
+.checkbox {
+  margin-left: 5px;
 }
 
 input {

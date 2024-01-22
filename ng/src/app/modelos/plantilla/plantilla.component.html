@@ -29,8 +29,14 @@
                     </ng-select>
                 }
                 @for (clave of this.claves; track clave) {
-                    <input type="text" placeholder="{{clave}}" id="{{clave}}" value="" >
-                    <br>
+                    @if(clave === "$$$") {
+                        <input type="text" placeholder="Numero Documento" id="{{clave}}" class="campoValido" value="" >
+                        <input type="checkbox" id="numeroDocAuto" class="checkbox" [(ngModel)]="numeroDocumento"> Genera automaticamente el numero de documento?
+                        <br>
+                    }@else {
+                        <input type="text" placeholder="{{clave}}" id="{{clave}}" class="campoVacio" value="" >
+                        <br>
+                    } 
                 }
                 <button type="submit" class="creaDocumento" (click)="creaDocumento()">Crea Documento</button>
                 @if(this.estadoCreacionArchivo) {
