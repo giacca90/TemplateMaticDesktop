@@ -24,7 +24,7 @@ file2html.config({
   templateUrl: './plantilla.component.html',
   styleUrl: './plantilla.component.css',
 })
-export class PlantillaComponent {
+export class PlantillaComponent implements OnDestroy{
   route: ActivatedRoute = inject(ActivatedRoute);
   id: number;
   file: File;
@@ -38,7 +38,7 @@ export class PlantillaComponent {
   progresoCargaInicial: number = 0;
   estadoCreacionArchivo: boolean = false;
   progresoCreacionArchivo: number = 0;
-  worker: Worker
+  worker: Worker | null = null
   numeroDocumento: boolean = false;
 
   constructor(
@@ -68,6 +68,13 @@ export class PlantillaComponent {
       this.abrirArchivo();
     }
   }
+  ngOnDestroy(): void {
+//    console.log("ngOnDestroy")
+    if(this.worker !== null) {
+//      console.log("Destruye en Worker");
+      this.worker.terminate();
+    }
+  }
 
   async abrirArchivo() {
     // Descomprime el archivo
@@ -88,7 +95,9 @@ export class PlantillaComponent {
       this.progresoCargaInicial = ((i + 1) / archivos.length) * 100;
       this.cdr.detectChanges();
     }
+    this.estadoCargaInicial = false;
     this.cambiaColor();
+    this.cdr.detectChanges();
 
     if (this.file.name.endsWith('odt')) {
       this.vistaOdt();
@@ -159,7 +168,6 @@ export class PlantillaComponent {
         }
       }
     }
-    this.estadoCargaInicial = false;
     this.cdr.detectChanges();
     console.log('Se han encontrado ' + this.claves.length + ' claves');
   }
