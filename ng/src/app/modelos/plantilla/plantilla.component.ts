@@ -8,14 +8,7 @@ import {
 import { IpcService } from '../../services/ipc-render.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import * as file2html from 'file2html';
-import OOXMLReader from 'file2html-ooxml';
-import OdtReader from 'file2html-odf';
 import JSZip from 'jszip';
-
-file2html.config({
-  readers: [OdtReader, OOXMLReader],
-});
 
 @Component({
   selector: 'app-plantilla',
