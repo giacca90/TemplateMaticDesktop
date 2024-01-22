@@ -13,6 +13,7 @@ import JSZip from 'jszip';
 file2html.config({
   readers: [OdtReader, OOXMLReader],
 });
+
 @Component({
   selector: 'app-plantilla',
   standalone: true,
@@ -108,7 +109,22 @@ export class PlantillaComponent {
   }
 
   async vistaDocx() {
-    //prueba con file2html
+
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker(new URL('./vista-docx.worker', import.meta.url));
+      worker.postMessage(this.file);
+      worker.onmessage = ({ data }) => {
+        let view = document.getElementById('contentContainer');
+        view.innerHTML = '<div id="contenido" style="width: 100%; height: 100%; overflow: hidden;">'+data+'</div>';
+    
+      };
+    } else {
+      let view = document.getElementById('contentContainer');
+      view.innerHTML = '<h3 text-color: red>NO SE PUEDE CARGAR UNA VISTA PREVIA!!!</h3>';
+    
+    }
+    /* //prueba con file2html
     try {
       // Espera a que se resuelva la Promesa y obtén el contenido del archivo en formato ArrayBuffer
       const content = await this.file.arrayBuffer();
@@ -140,7 +156,7 @@ export class PlantillaComponent {
       if (error.code === 'file2html.errors.unsupportedFile') {
         console.error('El formato del archivo no es compatible.');
       }
-    }
+    } */
   }
 
   buscaClaves(fileString: string) {
