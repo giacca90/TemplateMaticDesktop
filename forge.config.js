@@ -1,6 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
+    derefSymlinks: true,
     icon: 'favicon.ico'
   },
   rebuildConfig: {},
