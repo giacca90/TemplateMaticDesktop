@@ -49,7 +49,7 @@ export class PlantillaComponent implements OnDestroy{
       IPC.send('busca', plantilla.address);
       IPC.on('arraybuffer', (_event, arraybuffer: ArrayBuffer) => {
         this.file = new File([arraybuffer], plantilla.nombre);
-        this.nuevoFile = this.file;
+//        this.nuevoFile = this.file;
         this.nombre = plantilla.nombre;
         console.log('nombre: ' + this.nombre);
         this.ruta = plantilla.address;
@@ -202,6 +202,7 @@ export class PlantillaComponent implements OnDestroy{
 
   async creaDocumento() {
     console.log('Comienza creaDocumento');
+    this.nuevoFile = this.file;
     this.estadoCreacionArchivo = true;
     this.cdr.detectChanges();
     let fecha:Date = new Date()
@@ -228,11 +229,13 @@ export class PlantillaComponent implements OnDestroy{
     const zip = await JSZip().loadAsync(this.file);
     // Obtener la lista de archivos
     console.log('Obtiene lista de archivos');
-    const archivos = Object.keys(zip.files);
+    const archivos: string[] = Object.keys(zip.files);
+    archivos.forEach(ar => console.log(ar))
     // Procesar cada archivo
-    console.log('Comienza a analizar cada archivo');
+    console.log('Comienza a analizar cada archivo:');
     for (let i = 0; i < archivos.length; i++) {
       if (archivos[i].endsWith('xml')) {
+        console.log("ARCHIVO INTERNO: "+ archivos[i]);
         const contenido = await zip.file(archivos[i]).async('text');
         // Ahora puedes procesar el contenido XML como desees
         const parser = new DOMParser();
@@ -241,9 +244,9 @@ export class PlantillaComponent implements OnDestroy{
         const SxmlDoc = serializer.serializeToString(xmlDoc);
         //        console.log("Archivo:\n"+SxmlDoc);
         await this.sustituyeClaves(SxmlDoc, parejas, archivos[i]);
-        this.progresoCreacionArchivo = ((i + 1) / archivos.length) * 100;
-        this.cdr.detectChanges();
       }
+      this.progresoCreacionArchivo = ((i + 1) / archivos.length) * 100;
+      this.cdr.detectChanges();
     }
     console.log('Comienza la descarga del documento modificado');
     const link = document.createElement('a');

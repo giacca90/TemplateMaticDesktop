@@ -29,7 +29,7 @@ export class AgregarComponent implements OnInit {
   }
 
   precargaCSV() {
-    if(this.ipc.isElectron) {
+    if(this.ipc.isElectron()) {
       this.ipc.send("DialogCSV");
       this.ipc.on("CSV", (_event, file: string) => {
         console.log("CSV recibido: \n"+file);
