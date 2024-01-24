@@ -77,15 +77,20 @@ function createWindow () {
     const CSVGuardado = store.get('CSV');
     if(CSVGuardado && CSVGuardado.length > 0) {
       const file = fs.readFileSync(CSVGuardado).toString();
-    mainWindow.webContents.send('CSVRecuperado', file);
-
+      mainWindow.webContents.send('CSVRecuperado', file);
     }
   })
+
   ipcMain.on("persistenciaStatus", (_event) => {
+    console.log("persistencia status");
     const StatusGuardado = store.get('Status');
-    if(StatusGuardado && StatusGuardado.length > 0) {
+    console.log("statusguardado: "+StatusGuardado);
+    if(StatusGuardado !== undefined && StatusGuardado.length > 0) {
       const file = fs.readFileSync(StatusGuardado).toString();
+      console.log("file: "+file)
       mainWindow.webContents.send("StatusRecuperado", file);
+    }else{
+      mainWindow.webContents.send("StatusRecuperado", null);
     }
   })
 
