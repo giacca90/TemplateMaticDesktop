@@ -1,12 +1,12 @@
 <h3>Aquí puedes gestionar el historico de los documentos ya creados.</h3>
 <br>
 @if(this.IPC.isElectron()) {
-    <button type="submit">Exporta Status</button>
-    <button type="submit">Importa Status</button>
+    <button type="submit" (click)="this.exportaStatus()">Exporta Status</button>
+    <button type="submit" (click)="this.importaStatus()">Importa Status</button>
 }@else {
     <p>Estás en Web, y en Web NO hay persistencia directa de datos.</p>
     <p>Por lo tanto, si quieres analizar y modificar el Status,</p>
     <p>Tienes que cargar primero un archivo de Status Valido!!</p>
     <br>
-    <button type="submit">Importa Status</button>
+    <input type="file" (change)="this.importaStatus()" id="cargaStatus" accept=".csv">
 }

@@ -50,6 +50,17 @@ function createWindow () {
     }).catch(err => console.error("Error en DialogCSV: \n"+err))
   })
 
+  ipcMain.on("dialogStatus", (_event) => {
+    dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile', 'showHiddenFiles'],
+      filters: [{ name: 'CSV', extensions: ['csv', 'CSV'] },]
+    }).then((result) => {
+      store.set("Status", result.filePaths[0]);
+      const file = fs.readFileSync(result.filePaths[0]).toString();
+      mainWindow.webContents.send('StatusCSV', file);
+    }).catch(err => console.error("Error en dialogStatus: \n"+err))
+  })
+
   ipcMain.on("PersistenciaCarpeta", (_event) => {
     const storedFolderPath = store.get('carpetaSeleccionada');
     if(storedFolderPath && storedFolderPath.length > 0) {
@@ -68,6 +79,13 @@ function createWindow () {
       const file = fs.readFileSync(CSVGuardado).toString();
     mainWindow.webContents.send('CSVRecuperado', file);
 
+    }
+  })
+  ipcMain.on("persistenciaStatus", (_event) => {
+    const StatusGuardado = store.get('Status');
+    if(StatusGuardado && StatusGuardado.length > 0) {
+      const file = fs.readFileSync(StatusGuardado).toString();
+      mainWindow.webContents.send("StatusRecuperado", file);
     }
   })
 
