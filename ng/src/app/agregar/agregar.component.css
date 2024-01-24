@@ -1,8 +1,11 @@
-/* En tu archivo de estilos CSS (puede ser styles.css o styles.scss) */
+h3 {
+  color: green;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px; /* Ajusta según tus necesidades */
+    margin-top: 20px; 
   }
   
   th, td {

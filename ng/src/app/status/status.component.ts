@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { IpcService } from '../services/ipc-render.service'
 
 @Component({
   selector: 'app-status',
@@ -9,4 +10,11 @@ import { Component } from '@angular/core';
 })
 export class StatusComponent {
 
+  constructor(public IPC:IpcService) {
+    
+  }
+
+  importaStatus() {
+    
+  }
 }
