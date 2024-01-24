@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ClientesService, ClienteDinamico } from '../services/clientes.service';
+import { ClientesService} from '../services/clientes.service';
 import { IpcService } from '../services/ipc-render.service'
 
 @Component({
@@ -64,5 +64,32 @@ export class AgregarComponent implements OnInit {
     this.clientes = this.CS.clientes;
     this.cdr.detectChanges();
   };
+}
+
+export class ClienteDinamico {
+  public atributos:{clave:string, valor:string}[] = [];
+  id:number;
+
+  constructor(_claves:string[]) {
+    for(let _clave of _claves) {
+      this.atributos.push({clave: _clave, valor:""});
+    }
+  }
+
+  addValores(_valores:string[], _id:number) {
+      this.id = _id;
+      for(let i=0; i<_valores.length; i++) {
+        this.atributos[i].valor = _valores[i];
+      }
+  }
+
+  toString() {
+    let result:string = "";
+    for(let valor of this.atributos) {
+      result = result + valor.clave + ": " + valor.valor + "; ";
+    }
+    return result;
+  }
+
 }
 

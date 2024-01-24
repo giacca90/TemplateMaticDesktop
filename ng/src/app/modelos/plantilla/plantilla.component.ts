@@ -1,10 +1,8 @@
 import { Component, inject, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ClienteDinamico } from '../../agregar/agregar.component';
 import { Plantilla, PlantillaService } from '../../services/plantilla.service';
-import {
-  ClienteDinamico,
-  ClientesService,
-} from '../../services/clientes.service';
+import { ClientesService,} from '../../services/clientes.service';
 import { IpcService } from '../../services/ipc-render.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';

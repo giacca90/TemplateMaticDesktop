@@ -45,10 +45,14 @@ export class StatusComponent {
   cargaStatus (data:string) {
     this.SS.deleteStatus();
     let arrayStatus:string[] = data.split('\n');
-    for(let i=0; i<arrayStatus.length; i++) {
-      let arrayDetalleStatus:string[] = arrayStatus[i].split(',');
-
-    }
+    arrayStatus.forEach((line) => {
+      let datosClienteString:string = line.substring(line.indexOf('{')+1, line.indexOf('}'))
+      let datos:string = line.substring(0,line.indexOf('{')-1)+line.substring(line.indexOf('}'));
+      let arrayDatos:string[] = datos.split(',');
+      let arrayDatosClientes:string[] = datosClienteString.split(';');
+      let status:Status = new Status(parseInt(arrayDatos[0]),arrayDatos[1],arrayDatosClientes,arrayDatos[2],arrayDatos[3]);
+      this.SS.addStatus(status);
+    })
   }
 }
 
