@@ -11,6 +11,8 @@ import { StatusService } from '../services/status.service';
 })
 export class StatusComponent {
 
+  public status:Status[] = [];
+
   constructor(public IPC:IpcService, public SS:StatusService) {
     if(IPC.isElectron()) {
       IPC.send("persistenciaStatus");
@@ -53,6 +55,7 @@ export class StatusComponent {
       let status:Status = new Status(parseInt(arrayDatos[0]),arrayDatos[1],arrayDatosClientes,arrayDatos[2],arrayDatos[3]);
       this.SS.addStatus(status);
     })
+  this.status = this.SS.getStatus();
   }
 }
 

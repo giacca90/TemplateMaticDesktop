@@ -8,5 +8,32 @@
     <p>Por lo tanto, si quieres analizar y modificar el Status,</p>
     <p>Tienes que cargar primero un archivo de Status Valido!!</p>
     <br>
-    <input type="file" (change)="this.importaStatus()" id="cargaStatus" accept=".csv">
+    <input type="file" (change)="this.importaStatus()" id="cargaStatus" accept=".status">
 }
+
+<div>
+    @if(this.SS.getStatus().length === 0) {
+        <p class="error">No hay Status guardados!!!</p>
+    }@else {
+        <table>
+            <thead>
+                <tr>
+                    <th>Indice</th>
+                    <th>Plantilla</th>
+                    <th>Cliente</th>
+                    <th>Numero Documento</th>
+                    <th>Fecha Documento</th>
+                </tr>
+            </thead>
+            @for(stat of status; track stat) {
+                <tbody> 
+                    <td>{{stat.index}}</td>
+                    <td>{{stat.nombrePlantilla}}</td>
+                    <td>{{stat.datosCliente.toString()}}</td>
+                    <td>{{stat.numeroDocumento}}</td>
+                    <td>{{stat.fechaCreacion}}</td>
+                </tbody>
+            }
+        </table>
+    }
+</div>

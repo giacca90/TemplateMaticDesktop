@@ -53,7 +53,7 @@ function createWindow () {
   ipcMain.on("dialogStatus", (_event) => {
     dialog.showOpenDialog(mainWindow, {
       properties: ['openFile', 'showHiddenFiles'],
-      filters: [{ name: 'CSV', extensions: ['csv', 'CSV'] },]
+      filters: [{ name: 'Status', extensions: ['status', 'STATUS', 'Status'] },]
     }).then((result) => {
       store.set("Status", result.filePaths[0]);
       const file = fs.readFileSync(result.filePaths[0]).toString();
