@@ -1,6 +1,8 @@
 import { Component, inject, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ClienteDinamico } from '../../agregar/agregar.component';
+import { Status } from '../../status/status.component'; 
+import { StatusService } from '../../services/status.service'; 
 import { Plantilla, PlantillaService } from '../../services/plantilla.service';
 import { ClientesService,} from '../../services/clientes.service';
 import { IpcService } from '../../services/ipc-render.service';
@@ -35,7 +37,8 @@ export class PlantillaComponent implements OnDestroy{
   constructor(
     public PS: PlantillaService,
     public CS: ClientesService,
-    IPC: IpcService,
+    public SS: StatusService,
+    public IPC: IpcService,
     private cdr: ChangeDetectorRef
   ) {
     IPC.clear();
@@ -206,6 +209,7 @@ export class PlantillaComponent implements OnDestroy{
     let fecha:Date = new Date()
     let numeroDocumento = fecha.getFullYear().toString()+fecha.getMonth().toString()+fecha.getDate().toString()+fecha.getHours().toString()+fecha.getMinutes().toString()+fecha.getSeconds().toString();
     let parejas: Array<{ clave: string; valor: string }> = [];
+    let parejaStringArray:string[] = [];
     for (let clave of this.claves) {
       let ele = document.getElementById(clave) as HTMLInputElement;
       let val:string
@@ -213,6 +217,7 @@ export class PlantillaComponent implements OnDestroy{
         val = numeroDocumento;
       }else {
         val = ele.value;
+        parejaStringArray.push(clave+": "+val);
       }
     let par = { clave: clave, valor: val };
     parejas.push(par);
@@ -253,7 +258,10 @@ export class PlantillaComponent implements OnDestroy{
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
+    let status = new Status((this.SS.getStatus().length+1), 'rellenado_' + this.file.name, parejaStringArray, numeroDocumento, Date()) 
+    this.SS.addStatus(status);
+    this.IPC.send("addStatus", status.toString());
+  } 
 
   async sustituyeClaves(
     SxmlDoc: string,

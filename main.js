@@ -103,6 +103,13 @@ function createWindow () {
     mainWindow.webContents.send('arraybuffer',arraybuffer);
   })
 
+  ipcMain.on("addStatus", (_event, data) => {
+    let ruta = store.get("Status");
+    let statusString = fs.readFileSync(ruta).toString();
+    let nuevoStatus = data+'\n'+statusString;
+    fs.writeFileSync(ruta,nuevoStatus);
+  })
+
   async function readFilesInFolder(folderPath) {
     const files = [];
     const filenames = fs.readdirSync(folderPath);

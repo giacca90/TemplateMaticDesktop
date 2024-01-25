@@ -99,4 +99,8 @@ export class Status {
     res.push(this.fechaCreacion);
     return res;
   }
+
+  toString():string {
+    return this.index.toString()+','+this.nombrePlantilla+','+'{'+this.datosCliente.toString()+'}'+','+this.numeroDocumento+','+this.fechaCreacion
+  }
 }
