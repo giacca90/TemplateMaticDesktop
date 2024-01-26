@@ -33,6 +33,8 @@ export class PlantillaComponent implements OnDestroy{
   progresoCreacionArchivo: number = 0;
   worker: Worker | null = null
   numeroDocumento: boolean = false;
+  generos: boolean = false;
+  plurales: boolean = false;
 
   constructor(
     public PS: PlantillaService,
@@ -62,6 +64,7 @@ export class PlantillaComponent implements OnDestroy{
       this.abrirArchivo();
     }
   }
+
   ngOnDestroy(): void {
 //    console.log("ngOnDestroy")
     if(this.worker !== null) {
@@ -152,7 +155,11 @@ export class PlantillaComponent implements OnDestroy{
         if (indexEnd !== -1) {
           let clave = fileString.substring(index + 2, indexEnd);
           clave = clave.replace(/<.*?>/g, '');
-          if (!this.claves.includes(clave)) {
+          if(clave[0] === '@') {
+            this.generos = true;
+          }else if(clave[0] ==='#') {
+            this.plurales = true;
+          }else if (!this.claves.includes(clave)) {
             this.claves.push(clave);
             if(clave === '$$$') {
               this.numeroDocumento = true;
@@ -280,11 +287,28 @@ export class PlantillaComponent implements OnDestroy{
           let clave = SxmlDoc.substring(index + 2, indexEnd);
           clave = clave.replace(/<.*?>/g, '');
           let valor = '';
-          parejas.forEach((par) => {
-            if (par.clave === clave) {
-              valor = par.valor;
+          if(clave[0] === '@') {
+            let generos:string = (document.querySelector('input[name="generos"]:checked') as HTMLInputElement).value;
+            if(generos === "masculino") {
+              valor = clave.substring(1,clave.indexOf('/'));
+            }else{
+              valor = clave.substring(clave.indexOf('/')+1)
             }
-          });
+          }else if(clave[0] === '#') {
+            let plurales:string = (document.querySelector('input[name="plurales"]:checked') as HTMLInputElement).value;
+            if(plurales === "singular") {
+              valor = clave.substring(1,clave.indexOf('/'));
+            }else{
+              valor = clave.substring(clave.indexOf('/')+1)
+            }
+          }else{
+            parejas.forEach((par) => {
+              if (par.clave === clave) {
+                valor = par.valor;
+              }
+            });
+          }
+          
           documento = documento + SxmlDoc.substring(indexTemp, index) + valor;
 
           index = indexEnd;

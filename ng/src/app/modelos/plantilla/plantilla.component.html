@@ -28,6 +28,28 @@
                         }
                     </ng-select>
                 }
+                @if(this.generos === true) {
+                    <form>
+                        <label>
+                          <input type="radio" class="radio" name="generos" value="masculino" checked> Varón 
+                        </label>
+                      
+                        <label>
+                          <input type="radio" class="radio" name="generos" value="femenino"> Hembra
+                        </label>
+                    </form>
+                }
+                @if(this.plurales === true) {
+                    <form>
+                        <label>
+                          <input type="radio" class="radio" name="plurales" value="singular" checked> Cliente 
+                        </label>
+                      
+                        <label>
+                          <input type="radio" class="radio" name="plurales" value="plural"> Clientes 
+                        </label>
+                    </form>
+                }
                 @for (clave of this.claves; track clave) {
                     @if(clave === "$$$") {
                         <input type="text" placeholder="Numero Documento" id="{{clave}}" class="campoValido" value="" >
