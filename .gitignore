@@ -4,3 +4,4 @@ out/
 
 *.pfx
 *.pem
+*.status

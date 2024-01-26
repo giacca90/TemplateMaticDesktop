@@ -32,7 +32,6 @@ export class StatusComponent implements OnInit{
     this.cdr.detectChanges();
   }
 
-
   importaStatus() {
     if(this.IPC.isElectron()) {
       this.IPC.send("dialogStatus");
@@ -71,6 +70,17 @@ export class StatusComponent implements OnInit{
       this.SS.addStatus(status);
     })
     this.status = this.SS.getStatus();
+    this.cdr.detectChanges();
+  }
+
+  buscaStatus() {
+    let buscado = (document.getElementById("buscaStatus") as HTMLInputElement).value.toLowerCase();
+    this.status = [];
+    this.SS.getStatus().forEach((stat) => {
+      if(stat.toString().toLowerCase().includes(buscado)) {
+        this.status.push(stat)
+      }
+    })
     this.cdr.detectChanges();
   }
 }

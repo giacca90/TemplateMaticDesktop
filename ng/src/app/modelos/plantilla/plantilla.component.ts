@@ -267,7 +267,8 @@ export class PlantillaComponent implements OnDestroy{
     document.body.removeChild(link);
     let status = new Status((this.SS.getStatus().length+1), 'rellenado_' + this.file.name, parejaStringArray, numeroDocumento, Date()) 
     this.SS.addStatus(status);
-    this.IPC.send("addStatus", status.toString());
+    if(this.IPC.isElectron())
+      this.IPC.send("addStatus", status.toString());
   } 
 
   async sustituyeClaves(

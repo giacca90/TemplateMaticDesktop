@@ -10,6 +10,7 @@
     <br>
     <input type="file" (change)="this.importaStatus()" id="cargaStatus" accept=".status">
 }
+<input type="text" id="buscaStatus" placeholder="Ecribe para buscar..." (input)="buscaStatus()">
 
 <div>
     @if(this.SS.getStatus().length === 0) {

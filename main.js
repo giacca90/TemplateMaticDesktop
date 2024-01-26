@@ -105,9 +105,16 @@ function createWindow () {
 
   ipcMain.on("addStatus", (_event, data) => {
     let ruta = store.get("Status");
-    let statusString = fs.readFileSync(ruta).toString();
-    let nuevoStatus = data+'\n'+statusString;
-    fs.writeFileSync(ruta,nuevoStatus);
+    if(ruta) {
+      let statusString = fs.readFileSync(ruta).toString();
+      let nuevoStatus = data+'\n'+statusString;
+      fs.writeFileSync(ruta,nuevoStatus);
+    }else{
+      let nuevoStatus = data;
+      fs.writeFileSync(__dirname+'/status.status', nuevoStatus);
+      store.set("Status",__dirname+'/status.status')
+    }
+    
   })
 
   async function readFilesInFolder(folderPath) {
