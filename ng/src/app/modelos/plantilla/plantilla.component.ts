@@ -35,6 +35,8 @@ export class PlantillaComponent implements OnDestroy{
   numeroDocumento: boolean = false;
   generos: boolean = false;
   plurales: boolean = false;
+  cortina:boolean = false;
+  clientesTemporales:Array<ClienteDinamico>;
 
   constructor(
     public PS: PlantillaService,
@@ -44,6 +46,7 @@ export class PlantillaComponent implements OnDestroy{
     private cdr: ChangeDetectorRef
   ) {
     IPC.clear();
+    this.clientesTemporales = this.CS.clientes;
     this.id = this.route.snapshot.queryParams['id'];
     console.log('id: ' + this.id);
     let plantilla: Plantilla = PS.getPlantillaForId(this.id);
@@ -354,22 +357,39 @@ export class PlantillaComponent implements OnDestroy{
     console.log('crea nuevo archivo');
   }
 
-  completa() {
-    if (this.selected) {
-      const seleccionado = parseInt(this.selected);
-      const cliente: ClienteDinamico = this.CS.getClienteForId(seleccionado);
-      console.log('Cliente obtenido: ' + cliente.toString());
-      for (let atributo of cliente.atributos) {
-        for (let clave of this.claves) {
-          if (clave === atributo.clave) {
-            let a = document.getElementById(clave) as HTMLInputElement;
-            a.value = atributo.valor;
-            a.classList.remove("campoVacio");
-            a.classList.add("campoValido");
-            a.removeAttribute('placeholder');
-          }
+  completa(id:number) {
+    const cliente: ClienteDinamico = this.CS.getClienteForId(id);
+    console.log('Cliente obtenido: ' + cliente.toString());
+    for (let atributo of cliente.atributos) {
+      for (let clave of this.claves) {
+        if (clave === atributo.clave) {
+          let a = document.getElementById(clave) as HTMLInputElement;
+          a.value = atributo.valor;
+          a.classList.remove("campoVacio");
+          a.classList.add("campoValido");
+          a.removeAttribute('placeholder');
         }
       }
     }
+    this.cortina = false;
+    this.cdr.detectChanges();
   }
+
+  buscaCliente() {
+    let val:string = (document.getElementById("opciones") as HTMLInputElement).value
+    console.log("buscaCliente: "+val);
+    this.clientesTemporales = [];
+    this.CS.clientes.forEach((cliente) => {
+      if(cliente.toString().toLowerCase().includes(val.toLowerCase())){
+        this.clientesTemporales.push(cliente);
+      }
+    });
+    this.cdr.detectChanges();
+  }
+
+  abreCortina() {
+    this.cortina = true;
+    this.cdr.detectChanges();
+  }
+  
 }

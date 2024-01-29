@@ -62,3 +62,27 @@ input {
   .radio{
     margin: 5px;
   }
+
+  .cortina {
+    max-height: 150px; /* Altura máxima de la lista desplegable */
+    overflow-y: auto; /* Añade scroll vertical si es necesario */
+    border: 1px solid black;
+    border-top: none; /* Elimina el borde superior para que coincida con el campo de entrada */
+    position: absolute;
+    width: 100%;
+    background-color: white; /* Fondo blanco */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    direction: rtl; /* Dirección de derecha a izquierda */
+  }
+  
+  /* Estilo para cada elemento de la lista desplegable */
+  .cortina div {
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* Cambia el color de fondo al pasar el ratón sobre los elementos de la lista */
+  .cortina div:hover {
+    background-color: #f0f0f0;
+  }

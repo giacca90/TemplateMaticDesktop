@@ -21,12 +21,14 @@
             @if(this.progresoCargaInicial === 100) {
                 @if(this.CS.clientes.length > 0) {
                     <label for="opciones">Selecciona una opción: </label>
-                    <ng-select id="opciones" name="opciones" placeholder="Escribe o selecciona" [(ngModel)]="selected" (change)="completa()">
-                        <ng-option value="" disabled selected hidden></ng-option>
-                        @for(cliente of this.CS.clientes; track cliente) {
-                            <ng-option value="{{cliente.id}}">{{cliente.toString()}}</ng-option>
-                        }
-                    </ng-select>
+                    <input type="text" id="opciones" name="opciones" placeholder="Escribe o selecciona" (input)="buscaCliente()" (click)="this.abreCortina()">
+                    @if(this.cortina) {
+                        <div class="cortina">
+                            @for(cliente of this.clientesTemporales; track cliente) {
+                                <div (click)="completa(cliente.id)">{{cliente.toString()}}</div>
+                            }
+                        </div>
+                    }
                 }
                 @if(this.generos === true) {
                     <form>
