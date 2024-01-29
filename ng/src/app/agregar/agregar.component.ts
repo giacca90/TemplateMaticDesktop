@@ -53,12 +53,14 @@ export class AgregarComponent implements OnInit {
     for (let i = 0; i < rows.length; i++) {
       let cliente: ClienteDinamico;
       let val = rows[i].split(',');
-      if (i === 0) {
-        atributos = val;
-      } else {
-        cliente = new ClienteDinamico(atributos);
-        cliente.addValores(val, i);
-        this.CS.clientes.push(cliente);
+      if(val.length > 1) {
+        if (i === 0) {
+          atributos = val;
+        } else {
+          cliente = new ClienteDinamico(atributos);
+          cliente.addValores(val, i);
+          this.CS.clientes.push(cliente);
+        }  
       }
     }
     this.clientes = this.CS.clientes;
