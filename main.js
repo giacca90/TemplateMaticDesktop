@@ -1,21 +1,22 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, screen } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
 const Store = require('electron-store');
 const store = new Store();
 
 function createWindow () {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: width,
+    height: height,
     icon: path.join(__dirname, 'favicon.ico'),
     webPreferences: {
+      zoomFactor: 1.5,
       contextIsolation: false,
       nodeIntegration: true,
-//      preload: path.join(__dirname, 'preload.js')
-    }
+    },
   })
 
   // and load the index.html of the app.
@@ -23,6 +24,9 @@ function createWindow () {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
+  mainWindow.webContents.on('did-frame-finish-load', () => {
+    mainWindow.webContents.setZoomFactor(1.5); 
+  });
 
   ipcMain.on("openDialog", (_event) => {
     dialog.showOpenDialog(mainWindow, {
