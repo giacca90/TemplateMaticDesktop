@@ -1,6 +1,6 @@
 import { Component, OnInit,  ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PlantillaComponent } from '../modelos/plantilla/plantilla.component';
+import { PlantillaComponent } from '../plantilla/plantilla.component';
 import { PlantillaService, Plantilla } from '../services/plantilla.service';
 import { AgregarComponent } from '../agregar/agregar.component'
 import { StatusComponent } from '../status/status.component';
