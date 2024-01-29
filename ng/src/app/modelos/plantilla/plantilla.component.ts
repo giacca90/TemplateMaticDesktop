@@ -215,16 +215,21 @@ export class PlantillaComponent implements OnDestroy{
     this.nuevoFile = this.file;
     this.estadoCreacionArchivo = true;
     this.cdr.detectChanges();
-    let fecha:Date = new Date()
-    let numeroDocumento = fecha.getFullYear().toString()+fecha.getMonth().toString()+fecha.getDate().toString()+fecha.getHours().toString()+fecha.getMinutes().toString()+fecha.getSeconds().toString();
+    let fecha:Date = new Date();
+    let numeroDocumento = ''; 
     let parejas: Array<{ clave: string; valor: string }> = [];
     let parejaStringArray:string[] = [];
     for (let clave of this.claves) {
       let ele = document.getElementById(clave) as HTMLInputElement;
       let val:string
       if(clave === '$$$' && this.numeroDocumento === true) {
+        numeroDocumento = fecha.getFullYear().toString()+(fecha.getMonth()+1).toString()+fecha.getDate().toString()+fecha.getHours().toString()+fecha.getMinutes().toString()+fecha.getSeconds().toString();
         val = numeroDocumento;
-      }else {
+      }else if (clave === '$$$' && this.numeroDocumento === false) {
+        val = ele.value;
+        numeroDocumento = ele.value;
+      }
+      else {
         val = ele.value;
         parejaStringArray.push(clave+": "+val);
       }
@@ -242,7 +247,7 @@ export class PlantillaComponent implements OnDestroy{
     // Obtener la lista de archivos
     console.log('Obtiene lista de archivos');
     const archivos: string[] = Object.keys(zip.files);
-    archivos.forEach(ar => console.log(ar))
+//    archivos.forEach(ar => console.log(ar));
     // Procesar cada archivo
     console.log('Comienza a analizar cada archivo:');
     for (let i = 0; i < archivos.length; i++) {
@@ -263,11 +268,17 @@ export class PlantillaComponent implements OnDestroy{
     console.log('Comienza la descarga del documento modificado');
     const link = document.createElement('a');
     link.href = URL.createObjectURL(this.nuevoFile);
-    link.download = 'rellenado_' + this.file.name; // Puedes cambiar el nombre según el tipo de archivo
+    let nombreFinal:string = '';
+    if(this.claves.includes('$$$')) {
+      nombreFinal = numeroDocumento+'_'+this.file.name;
+    }else{
+      nombreFinal = 'rellenado_' + this.file.name
+    }
+    link.download = nombreFinal; 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    let status = new Status((this.SS.getStatus().length+1), 'rellenado_' + this.file.name, parejaStringArray, numeroDocumento, Date()) 
+    let status = new Status((this.SS.getStatus().length+1), this.file.name, parejaStringArray, numeroDocumento, Date()) 
     this.SS.addStatus(status, true);
     if(this.IPC.isElectron())
       this.IPC.send("addStatus", status.toString());

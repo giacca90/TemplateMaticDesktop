@@ -3,12 +3,13 @@ import { RouterLink } from '@angular/router';
 import { PlantillaComponent } from '../modelos/plantilla/plantilla.component';
 import { PlantillaService, Plantilla } from '../services/plantilla.service';
 import { AgregarComponent } from '../agregar/agregar.component'
+import { StatusComponent } from '../status/status.component';
 import { IpcService } from '../services/ipc-render.service'
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, PlantillaComponent, AgregarComponent],
+  imports: [RouterLink, PlantillaComponent, AgregarComponent, StatusComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
