@@ -86,3 +86,8 @@ input {
   .cortina div:hover {
     background-color: #f0f0f0;
   }
+
+  #opciones {
+    border: 1px solid lightskyblue;
+    margin: 3px;
+  }
