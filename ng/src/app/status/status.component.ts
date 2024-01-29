@@ -54,7 +54,30 @@ export class StatusComponent implements OnInit{
   }
 
   exportaStatus() {
+    console.log("Exporta Status");
+    let res:string = '';
+    this.SS.getStatus().forEach((line) => {
+      res = res+line.toString()+'\n';
+    });
+    const blob = new Blob([res], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
 
+    // Crear un elemento <a> invisible
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'status.status'; // Nombre del archivo a descargar
+
+    // Anexar el elemento <a> al DOM
+    document.body.appendChild(a);
+
+    // Simular un clic en el enlace para iniciar la descarga
+    a.click();
+
+    // Eliminar el elemento <a> después de la descarga
+    document.body.removeChild(a);
+
+    // Liberar el objeto Blob
+    window.URL.revokeObjectURL(url);
   }
 
   cargaStatus (data:string) {

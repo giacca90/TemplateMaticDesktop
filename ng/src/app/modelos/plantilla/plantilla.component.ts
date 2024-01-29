@@ -61,6 +61,8 @@ export class PlantillaComponent implements OnDestroy{
         this.abrirArchivo();
       });
     } else {
+      this.nombre = this.file.name;
+      this.ruta = this.file.path;
       this.abrirArchivo();
     }
   }
@@ -266,7 +268,7 @@ export class PlantillaComponent implements OnDestroy{
     link.click();
     document.body.removeChild(link);
     let status = new Status((this.SS.getStatus().length+1), 'rellenado_' + this.file.name, parejaStringArray, numeroDocumento, Date()) 
-    this.SS.addStatus(status);
+    this.SS.addStatus(status, true);
     if(this.IPC.isElectron())
       this.IPC.send("addStatus", status.toString());
   } 

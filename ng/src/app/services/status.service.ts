@@ -9,8 +9,12 @@ export class StatusService {
   
   constructor() { }
 
-  addStatus(data:Status) {
-    this.status.push(data);
+  addStatus(data:Status, up?:boolean) {
+    if(up && up === true) {
+      this.status.unshift(data);
+    }else{
+      this.status.push(data);
+    }
   }
 
   getStatus() {

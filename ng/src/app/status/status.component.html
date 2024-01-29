@@ -9,6 +9,7 @@
     <p>Tienes que cargar primero un archivo de Status Valido!!</p>
     <br>
     <input type="file" (change)="this.importaStatus()" id="cargaStatus" accept=".status">
+    <button type="submit" (click)="this.exportaStatus()">Exporta Status</button>
 }
 <input type="text" id="buscaStatus" placeholder="Ecribe para buscar..." (input)="buscaStatus()">
 
