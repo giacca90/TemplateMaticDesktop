@@ -3,6 +3,7 @@ import { HomeComponent } from './home/home.component';
 import { AgregarComponent } from './agregar/agregar.component';
 import { StatusComponent } from './status/status.component';
 import { PlantillaComponent } from './modelos/plantilla/plantilla.component'
+import { GuiaComponent } from './guia/guia.component';
 
 
 export const routes: Routes = [
@@ -10,4 +11,5 @@ export const routes: Routes = [
     { path: 'status', component: StatusComponent },
     { path: 'agregar', component: AgregarComponent },
     { path: 'plantilla/:id', component: PlantillaComponent },
+    { path: 'guia', component: GuiaComponent },
 ];
