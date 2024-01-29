@@ -1,22 +1,26 @@
 <h3>Aquí puedes gestionar el historico de los documentos ya creados.</h3>
 <br>
 @if(this.IPC.isElectron()) {
-    <button type="submit" (click)="this.exportaStatus()">Exporta Status</button>
-    <button type="submit" (click)="this.importaStatus()">Importa Status</button>
+    <button type="submit" (click)="this.importaStatus()">Importa Status</button> 
+    @if(this.SS.getStatus().length > 0) {
+        <button type="submit" (click)="this.exportaStatus()">Exporta Status</button>
+    }
 }@else {
     <p>Estás en Web, y en Web NO hay persistencia directa de datos.</p>
     <p>Por lo tanto, si quieres analizar y modificar el Status,</p>
     <p>Tienes que cargar primero un archivo de Status Valido!!</p>
     <br>
     <input type="file" (change)="this.importaStatus()" id="cargaStatus" accept=".status">
-    <button type="submit" (click)="this.exportaStatus()">Exporta Status</button>
+    @if(this.SS.getStatus().length > 0) {
+        <button type="submit" (click)="this.exportaStatus()">Exporta Status</button>
+    }
+    
 }
-<input type="text" id="buscaStatus" placeholder="Ecribe para buscar..." (input)="buscaStatus()">
-
 <div>
     @if(this.SS.getStatus().length === 0) {
         <p class="error">No hay Status guardados!!!</p>
     }@else {
+        <input type="text" id="buscaStatus" placeholder="Ecribe para buscar..." (input)="buscaStatus()">
         <table>
             <thead>
                 <tr>

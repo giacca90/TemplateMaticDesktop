@@ -84,13 +84,15 @@ export class StatusComponent implements OnInit{
     console.log("carga status");
     this.SS.deleteStatus();
     let arrayStatus:string[] = data.split('\n');
-    arrayStatus.forEach((line) => {
-      let datosClienteString:string = line.substring(line.indexOf('{')+1, line.indexOf('}'))
-      let datos:string = line.substring(0,line.indexOf('{')-1)+line.substring(line.indexOf('}')+1);
-      let arrayDatos:string[] = datos.split(',');
-      let arrayDatosClientes:string[] = datosClienteString.split(';');
-      let status:Status = new Status(parseInt(arrayDatos[0]),arrayDatos[1],arrayDatosClientes,arrayDatos[2],arrayDatos[3]);
-      this.SS.addStatus(status);
+    arrayStatus.forEach((line:string) => {
+      if(line.length > 1) {
+        let datosClienteString:string = line.substring(line.indexOf('{')+1, line.indexOf('}'))
+        let datos:string = line.substring(0,line.indexOf('{')-1)+line.substring(line.indexOf('}')+1);
+        let arrayDatos:string[] = datos.split(',');
+        let arrayDatosClientes:string[] = datosClienteString.split(';');
+        let status:Status = new Status(parseInt(arrayDatos[0]),arrayDatos[1],arrayDatosClientes,arrayDatos[2],arrayDatos[3]);
+        this.SS.addStatus(status);
+      }
     })
     this.status = this.SS.getStatus();
     this.cdr.detectChanges();
