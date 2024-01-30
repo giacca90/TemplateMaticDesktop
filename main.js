@@ -23,11 +23,11 @@ function createWindow () {
   mainWindow.loadFile('ng/dist/browser/index.html')
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+   mainWindow.webContents.openDevTools()
   mainWindow.webContents.on('did-frame-finish-load', () => {
     mainWindow.webContents.setZoomFactor(1.5); 
   });
-
+ 
   ipcMain.on("openDialog", (_event) => {
     dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory']
@@ -115,10 +115,11 @@ function createWindow () {
       fs.writeFileSync(ruta,nuevoStatus);
     }else{
       let nuevoStatus = data;
-      fs.writeFileSync(__dirname+'/status.status', nuevoStatus);
-      store.set("Status",__dirname+'/status.status')
-    }
-    
+      let userDataPath = app.getPath('userData');
+      let statusFilePath = `${userDataPath}/status.status`;
+      fs.writeFileSync(statusFilePath, nuevoStatus);
+      store.set("Status",statusFilePath)
+    }  
   })
 
   async function readFilesInFolder(folderPath) {

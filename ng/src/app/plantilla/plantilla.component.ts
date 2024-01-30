@@ -48,25 +48,27 @@ export class PlantillaComponent implements OnDestroy{
     IPC.clear();
     this.clientesTemporales = this.CS.clientes;
     this.id = this.route.snapshot.queryParams['id'];
-    console.log('id: ' + this.id);
-    let plantilla: Plantilla = PS.getPlantillaForId(this.id);
-    this.file = plantilla.file;
-    if (this.file === null) {
-      IPC.send('busca', plantilla.address);
-      IPC.on('arraybuffer', (_event, arraybuffer: ArrayBuffer) => {
-        this.file = new File([arraybuffer], plantilla.nombre);
-//        this.nuevoFile = this.file;
-        this.nombre = plantilla.nombre;
-        console.log('nombre: ' + this.nombre);
-        this.ruta = plantilla.address;
-        console.log('ruta: ' + this.ruta);
-
+ //   console.log('id: ' + this.id);
+    if(this.id) {
+      let plantilla: Plantilla = PS.getPlantillaForId(this.id);
+      this.file = plantilla.file;
+      if (this.file === null) {
+        IPC.send('busca', plantilla.address);
+        IPC.on('arraybuffer', (_event, arraybuffer: ArrayBuffer) => {
+          this.file = new File([arraybuffer], plantilla.nombre);
+  //        this.nuevoFile = this.file;
+          this.nombre = plantilla.nombre;
+          console.log('nombre: ' + this.nombre);
+          this.ruta = plantilla.address;
+          console.log('ruta: ' + this.ruta);
+  
+          this.abrirArchivo();
+        });
+      } else {
+        this.nombre = this.file.name;
+        this.ruta = this.file.path;
         this.abrirArchivo();
-      });
-    } else {
-      this.nombre = this.file.name;
-      this.ruta = this.file.path;
-      this.abrirArchivo();
+      }
     }
   }
 
