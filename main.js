@@ -5,6 +5,7 @@ const fs = require('fs');
 const Store = require('electron-store');
 const store = new Store();
 const os = require('os');
+const ChildProcess = require('child_process');
 
 if (handleSquirrelEvent()) {
   // squirrel event handled and app will exit in 1000ms, so don't do anything else
@@ -15,9 +16,6 @@ function handleSquirrelEvent() {
   if (process.argv.length === 1) {
     return false;
   }
-
-  const ChildProcess = require('child_process');
-  const path = require('path');
 
   const appFolder = path.resolve(process.execPath, '..');
   console.log("appFolder: "+appFolder);
@@ -45,9 +43,7 @@ function handleSquirrelEvent() {
   const squirrelEvent = process.argv[1];
   switch (squirrelEvent) {
     case '--squirrel-install':
-      const appexe = path.join(appFolder,'template-matic-desktop.exe');
-      const link =path.join(os.homedir(),'Desktop','TemplateMatic.lnk')
-      fs.symlinkSync(appexe, link);
+   
     case '--squirrel-updated':
       // Optionally do things such as:
       // - Add your .exe to the PATH
