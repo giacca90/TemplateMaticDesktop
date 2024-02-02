@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, ipcMain, dialog, screen } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, screen, globalShortcut } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
 const Store = require('electron-store');
@@ -93,12 +93,21 @@ function createWindow () {
   // and load the index.html of the app.
   mainWindow.loadFile('ng/dist/browser/index.html')
 
-  // Open the DevTools.
+  /* // Open the DevTools.
    mainWindow.webContents.openDevTools()
   mainWindow.webContents.on('did-frame-finish-load', () => {
     mainWindow.webContents.setZoomFactor(1.5); 
+  }); */
+
+  // Registra un atajo de teclado global para abrir las herramientas de desarrollo
+  globalShortcut.register('CommandOrControl+Alt+I', () => {
+    // Abre las herramientas de desarrollo
+    mainWindow.webContents.openDevTools();
+    mainWindow.webContents.on('did-frame-finish-load', () => {
+      mainWindow.webContents.setZoomFactor(1.5); 
+    });
   });
- 
+
   ipcMain.on("openDialog", (_event) => {
     dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory']
