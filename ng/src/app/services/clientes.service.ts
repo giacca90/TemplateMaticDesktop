@@ -1,25 +1,25 @@
 import { Injectable } from '@angular/core';
-import { ClienteDinamico } from '../agregar/agregar.component'
+import { ClienteDinamico } from '../agregar/agregar.component';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class ClientesService {
-  public clientes:Array<ClienteDinamico> = [];
-  constructor() { }
+	public clientes:Array<ClienteDinamico> = [];
+	constructor() { }
 
-  addCliente(cliente:ClienteDinamico) {
-    this.clientes.push(cliente);
-  }
+	addCliente(cliente:ClienteDinamico) {
+		this.clientes.push(cliente);
+	}
 
-  getClienteForId(id:number) {
-    for(let cliente of this.clientes) {
-      if(cliente.id === id) {
-        return cliente;
-      }
-    }
-    return null;
-  }
+	getClienteForId(id:number) {
+		for(const cliente of this.clientes) {
+			if(cliente.id === id) {
+				return cliente;
+			}
+		}
+		return null;
+	}
 }
 
 

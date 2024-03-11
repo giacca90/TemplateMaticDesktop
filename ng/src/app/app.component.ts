@@ -7,13 +7,13 @@ import { StatusComponent } from './status/status.component';
 import { GuiaComponent } from './guia/guia.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, RouterModule, HomeComponent, AgregarComponent, StatusComponent, GuiaComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+	selector: 'app-root',
+	standalone: true,
+	imports: [CommonModule, RouterModule, HomeComponent, AgregarComponent, StatusComponent, GuiaComponent],
+	templateUrl: './app.component.html',
+	styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'TemplateMatic';
-routeParameterValue: any;
+	title = 'TemplateMatic';
+	routeParameterValue;
 }
