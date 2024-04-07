@@ -1,4 +1,4 @@
-<h3>Aquí puedes gestionar el historico de los documentos ya creados.</h3>
+<h3>Aquí puedes gestionar el histórico de los documentos ya creados.</h3>
 <br>
 @if(this.IPC.isElectron()) {
     <button type="submit" (click)="this.importaStatus()">Importa Status</button> 
@@ -20,7 +20,7 @@
     @if(this.SS.getStatus().length === 0) {
         <p class="error">No hay Status guardados!!!</p>
     }@else {
-        <input type="text" id="buscaStatus" placeholder="Ecribe para buscar..." (input)="buscaStatus()">
+        <input type="text" id="buscaStatus" placeholder="Escribe para buscar..." (input)="buscaStatus()">
         <table>
             <thead>
                 <tr>

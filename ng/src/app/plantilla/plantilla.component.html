@@ -1,7 +1,7 @@
 <h1>{{nombre}}</h1>
 @if(this.CS.clientes.length === 0) {
     <p style="color: red; text-align: center;">No se ha cargado un listado de clientes!!!</p>
-    <p style="color: red; text-align: center;">Si quieres autocompletar la plantilla de forma automatica carga un SCV en la sección Agregar </p>
+    <p style="color: red; text-align: center;">Si quieres autocompletar la plantilla de forma automática carga un SCV en la sección Agregar </p>
 }
 <div class="container text-center">
     <div class="row align-items-start">
@@ -55,7 +55,7 @@
                 @for (clave of this.claves; track clave) {
                     @if(clave === "$$$") {
                         <input type="text" placeholder="Numero Documento" id="{{clave}}" class="campoValido" value="" >
-                        <input type="checkbox" id="numeroDocAuto" class="checkbox" [(ngModel)]="numeroDocumento"> Genera automaticamente el numero de documento?
+                        <input type="checkbox" id="numeroDocAuto" class="checkbox" [(ngModel)]="numeroDocumento"> Genera automáticamente el numero de documento?
                         <br>
                     }@else {
                         <input type="text" placeholder="{{clave}}" id="{{clave}}" class="campoVacio" value="" >
