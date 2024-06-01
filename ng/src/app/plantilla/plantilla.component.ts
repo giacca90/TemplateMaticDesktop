@@ -48,7 +48,7 @@ export class PlantillaComponent implements OnDestroy{
 		IPC.clear();
 		this.clientesTemporales = this.CS.clientes;
 		this.id = this.route.snapshot.queryParams['id'];
-		//   console.log('id: ' + this.id);
+
 		if(this.id) {
 			const plantilla: Plantilla = PS.getPlantillaForId(this.id);
 			this.file = plantilla.file;
@@ -73,9 +73,7 @@ export class PlantillaComponent implements OnDestroy{
 	}
 
 	ngOnDestroy(): void {
-		//    console.log("ngOnDestroy")
 		if(this.worker !== null) {
-			//      console.log("Destruye en Worker");
 			this.worker.terminate();
 		}
 	}
