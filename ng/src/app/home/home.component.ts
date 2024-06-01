@@ -1,9 +1,9 @@
 import { Component, OnInit,  ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PlantillaComponent } from '../plantilla/plantilla.component';
+import { PlantillaComponent } from '../components/plantilla/plantilla.component';
 import { PlantillaService, Plantilla } from '../services/plantilla.service';
-import { AgregarComponent } from '../agregar/agregar.component';
-import { StatusComponent } from '../status/status.component';
+import { AgregarComponent } from '../components/agregar/agregar.component';
+import { StatusComponent } from '../components/status/status.component';
 import { IpcService } from '../services/ipc-render.service';
 
 @Component({

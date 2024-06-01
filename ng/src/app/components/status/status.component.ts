@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { IpcService } from '../services/ipc-render.service';
-import { StatusService } from '../services/status.service';
+import { IpcService } from '../../services/ipc-render.service';
+import { StatusService } from '../../services/status.service';
 
 @Component({
 	selector: 'app-status',

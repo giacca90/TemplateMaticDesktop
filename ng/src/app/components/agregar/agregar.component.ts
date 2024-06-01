@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ClientesService} from '../services/clientes.service';
-import { IpcService } from '../services/ipc-render.service';
+import { ClientesService} from '../../services/clientes.service';
+import { IpcService } from '../../services/ipc-render.service';
 
 @Component({
 	selector: 'app-agregar',

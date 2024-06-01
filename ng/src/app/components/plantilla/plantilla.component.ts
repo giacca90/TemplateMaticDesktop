@@ -2,10 +2,10 @@ import { Component, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ClienteDinamico } from '../agregar/agregar.component';
 import { Status } from '../status/status.component'; 
-import { StatusService } from '../services/status.service'; 
-import { Plantilla, PlantillaService } from '../services/plantilla.service';
-import { ClientesService,} from '../services/clientes.service';
-import { IpcService } from '../services/ipc-render.service';
+import { StatusService } from '../../services/status.service'; 
+import { Plantilla, PlantillaService } from '../../services/plantilla.service';
+import { ClientesService } from '../../services/clientes.service';
+import { IpcService } from '../../services/ipc-render.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import JSZip from 'jszip';
@@ -134,7 +134,7 @@ export class PlantillaComponent implements OnDestroy{
 		if (typeof Worker !== 'undefined') {
 			// Create a new
 			this.worker = new Worker(
-				new URL('./vista-docx.worker', import.meta.url)
+				new URL('../../workers/vista-docx.worker', import.meta.url)
 			);
 			this.worker.postMessage(this.file);
 			this.worker.onmessage = ({ data }) => {

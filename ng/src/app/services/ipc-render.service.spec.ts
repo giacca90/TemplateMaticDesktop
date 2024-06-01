@@ -3,14 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { IpcRenderService } from './ipc-render.service';
 
 describe('IpcRenderService', () => {
-  let service: IpcRenderService;
+	let service: IpcRenderService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(IpcRenderService);
-  });
+	beforeEach(() => {
+		TestBed.configureTestingModule({});
+		service = TestBed.inject(IpcRenderService);
+	});
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+	it('should be created', () => {
+		expect(service).toBeTruthy();
+	});
 });
