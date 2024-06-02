@@ -3,13 +3,13 @@ import { ActivatedRoute } from '@angular/router';
 import { Status } from '../status/status.component'; 
 import { StatusService } from '../../services/status.service'; 
 import { PlantillaService } from '../../services/plantilla.service';
-import { Documento } from '../../objects/documento';
 import { ClientesService } from '../../services/clientes.service';
 import { IpcService } from '../../services/ipc-render.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import JSZip from 'jszip';
 import { ClienteDinamico } from '../../objects/cliente';
+import { Documento } from '../../objects/documento';
+import JSZip from 'jszip';
 
 @Component({
 	selector: 'app-plantilla',
@@ -57,128 +57,28 @@ export class PlantillaComponent implements OnDestroy{
 				IPC.send('busca', plantilla.address);
 				IPC.on('arraybuffer', (_event, arraybuffer: ArrayBuffer) => {
 					this.file = new File([arraybuffer], plantilla.nombre);
-					//        this.nuevoFile = this.file;
+					plantilla.file = this.file;
 					this.nombre = plantilla.nombre;
 					console.log('nombre: ' + this.nombre);
 					this.ruta = plantilla.address;
 					console.log('ruta: ' + this.ruta);
-  
-					this.abrirArchivo();
 				});
 			} else {
 				this.nombre = this.file.name;
 				this.ruta = this.file.path;
-				this.abrirArchivo();
 			}
+
+			plantilla.abrirArchivo();
 		}
 	}
 
+	//TODO: tendrá que destruir el objecto Documento
 	ngOnDestroy(): void {
 		if(this.worker !== null) {
 			this.worker.terminate();
 		}
 	}
-
-	async abrirArchivo() {
-		// Descomprime el archivo
-		const zip = await JSZip().loadAsync(this.file);
-		// Obtener la lista de archivos
-		const archivos = Object.keys(zip.files);
-		// Procesar cada archivo
-		for (let i = 0; i < archivos.length; i++) {
-			if (archivos[i].endsWith('xml')) {
-				const contenido = await zip.file(archivos[i]).async('text');
-				// Ahora puedes procesar el contenido XML como desees
-				const parser = new DOMParser();
-				const xmlDoc = parser.parseFromString(contenido, 'text/xml');
-				const serializer = new XMLSerializer();
-				const SxmlDoc = serializer.serializeToString(xmlDoc);
-				this.buscaClaves(SxmlDoc);
-			}
-			this.progresoCargaInicial = ((i + 1) / archivos.length) * 100;
-			this.cdr.detectChanges();
-		}
-		this.estadoCargaInicial = false;
-		this.cambiaColor();
-		this.cdr.detectChanges();
-
-		if (this.file.name.endsWith('odt')) {
-			this.vistaOdt();
-		}
-		if (this.file.name.endsWith('docx')) {
-			this.vistaDocx();
-		}
-	}
-
-	async vistaOdt() {
-		let vista = null;
-		const zip = await JSZip().loadAsync(this.file);
-		const reader = new FileReader();
-		vista = await zip.file('Thumbnails/thumbnail.png').async('blob');
-		reader.readAsDataURL(vista);
-		reader.onload = () => {
-			const view = document.getElementById('contentContainer');
-			// Crea un elemento de imagen y establece su fuente como los datos de la imagen
-			const imgElement = document.createElement('img');
-			imgElement.src = reader.result as string;
-			imgElement.alt = 'Cargando...';
-			// Establece el ancho del elemento img al ancho del div
-			imgElement.style.width = '100%';
-			// Agrega la imagen al div
-			view.innerHTML = '';
-			view.appendChild(imgElement);
-		};
-		this.cdr.detectChanges();
-	}
-
-	async vistaDocx() {
-		if (typeof Worker !== 'undefined') {
-			// Create a new
-			this.worker = new Worker(
-				new URL('../../workers/vista-docx.worker', import.meta.url)
-			);
-			this.worker.postMessage(this.file);
-			this.worker.onmessage = ({ data }) => {
-				const view = document.getElementById('contentContainer');
-				view.innerHTML =
-          '<div id="contenido" style="width: 100%; height: 100%; overflow: hidden;">' +
-          data +
-          '</div>';
-			};
-		} else {
-			const view = document.getElementById('contentContainer');
-			view.innerHTML =
-        '<h3 text-color: red>NO SE PUEDE CARGAR UNA VISTA PREVIA!!!</h3>';
-		}
-	}
-
-	buscaClaves(fileString: string) {
-		let index: number = 0;
-		while (index !== -1) {
-			index = fileString.indexOf('{{', index);
-			if (index !== -1) {
-				const indexEnd = fileString.indexOf('}}', index);
-				if (indexEnd !== -1) {
-					let clave = fileString.substring(index + 2, indexEnd);
-					clave = clave.replace(/<.*?>/g, '');
-					if(clave[0] === '@') {
-						this.generos = true;
-					}else if(clave[0] ==='#') {
-						this.plurales = true;
-					}else if (!this.claves.includes(clave)) {
-						this.claves.push(clave);
-						if(clave === '$$$') {
-							this.numeroDocumento = true;
-						}
-					}
-					index = indexEnd;
-				}
-			}
-		}
-		this.cdr.detectChanges();
-		console.log('Se han encontrado ' + this.claves.length + ' claves');
-	}
-
+	
 	cambiaColor() {
 		for (const clave of this.claves) {
 			console.log('Clave: '+clave);

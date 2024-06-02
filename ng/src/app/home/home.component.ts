@@ -28,7 +28,6 @@ export class HomeComponent implements OnInit {
 			this.ipcRenderer.send('PersistenciaCarpeta');
 			this.ipcRenderer.on('Carpeta', (_event, files:string[]) => {
 				for(let i=0; i<files.length; i++) {
-					//            console.log("Prueba: "+files[i]);
 					if(files[i].endsWith('odt') || files[i].endsWith('docx')) 
 						plantillas.push(new Documento(i+1, null, files[i].split('/').slice(-1)[0], files[i]));
 				}
