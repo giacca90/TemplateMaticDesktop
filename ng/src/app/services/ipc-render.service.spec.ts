@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { IpcRenderService } from './ipc-render.service';
+import { IpcService } from './ipc-render.service';
 
 describe('IpcRenderService', () => {
-	let service: IpcRenderService;
+	let service: IpcService;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({});
-		service = TestBed.inject(IpcRenderService);
+		service = TestBed.inject(IpcService);
 	});
 
 	it('should be created', () => {

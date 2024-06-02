@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import { Injectable } from '@angular/core';
 import { IpcRenderer } from 'electron';
 
@@ -19,7 +20,7 @@ export class IpcService {
 		}
 	}
 
-	public on(channel: string, listener: any): void {
+	public on(channel: string, listener): void {
 		if (!this._ipc) {
 			return;
 		}
@@ -50,46 +51,4 @@ export class IpcService {
 		this._ipc.removeAllListeners('openDialog');
 		this._ipc.removeAllListeners('archivos-de-carpeta');
 	}
-
-	/*private ipc: IpcRenderer;
-  constructor() {
-    //If window.require is available, it means that electron is running, then ipc will be loaded.
-    if (window.require) {
-      try {
-        this.ipc = window.require("electron").ipcRenderer;
-      } catch (e) {
-        throw e;
-      }
-    } else {
-      console.warn("Electron IPC was not loaded");
-    }
-  }
-
-  public on(channel: string, listener: any): void {
-    if (!this.ipc) {
-      return;
-    }
-    this.ipc.on(channel, listener);
-  }
-  
-  public once(channel: string, listener: any): void {
-    if (!this.ipc) {
-      return;
-    }
-    this.ipc.once(channel, listener);
-  }
-
-  public send(channel: string, ...args: any[]): void {
-    if (!this.ipc) {
-      return;
-    }
-    this.ipc.send(channel, ...args);
-  }
-
-  public removeAllListeners(channel: string): void {
-    if (!this.ipc) {
-      return;
-    }
-    this.ipc.removeAllListeners(channel);
-  } */
 }

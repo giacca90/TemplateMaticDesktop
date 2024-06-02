@@ -1,14 +1,15 @@
 import { Component, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ClienteDinamico } from '../agregar/agregar.component';
 import { Status } from '../status/status.component'; 
 import { StatusService } from '../../services/status.service'; 
-import { Plantilla, PlantillaService } from '../../services/plantilla.service';
+import { PlantillaService } from '../../services/plantilla.service';
+import { Documento } from '../../objects/documento';
 import { ClientesService } from '../../services/clientes.service';
 import { IpcService } from '../../services/ipc-render.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import JSZip from 'jszip';
+import { ClienteDinamico } from '../../objects/cliente';
 
 @Component({
 	selector: 'app-plantilla',
@@ -50,7 +51,7 @@ export class PlantillaComponent implements OnDestroy{
 		this.id = this.route.snapshot.queryParams['id'];
 
 		if(this.id) {
-			const plantilla: Plantilla = PS.getPlantillaForId(this.id);
+			const plantilla: Documento = PS.getPlantillaForId(this.id);
 			this.file = plantilla.file;
 			if (this.file === null) {
 				IPC.send('busca', plantilla.address);
