@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import {Component, inject, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Status} from '../status/status.component';
@@ -148,7 +149,7 @@ export class PlantillaComponent implements OnDestroy {
 		this.cdr.detectChanges();
 		const fecha: Date = new Date();
 		let numeroDocumento = '';
-		const parejas: Array<{clave: string; valor: string}> = [];
+		const parejas: Map<string, string> = new Map<string, string>;
 		const parejaStringArray: string[] = [];
 		for (const clave of this.plantilla.claves) {
 			const ele = document.getElementById(clave) as HTMLInputElement;
@@ -169,13 +170,12 @@ export class PlantillaComponent implements OnDestroy {
 				val = ele.value;
 				parejaStringArray.push(clave + ': ' + val);
 			}
-			const par = {clave: clave, valor: val};
-			parejas.push(par);
+			parejas.set(clave, val);
 		}
 
 		const nuevosContenidos: Map<string,string> = new Map<string, string>;
 		this.plantilla.contenido.forEach(async (contenido: string, nombre: string) => {
-			nuevosContenidos.set(nombre, await this.sustituyeClaves(contenido, parejas));
+			nuevosContenidos.set(nombre, await this.sustituyeClaves(contenido, parejas, nombre));
 		});
 		const zip = new JSZip();
 		// Lee el contenido del archivo original
@@ -208,49 +208,37 @@ export class PlantillaComponent implements OnDestroy {
 		if (this.IPC.isElectron()) this.IPC.send('addStatus', status.toString());
 	}
 
-	async sustituyeClaves(SxmlDoc: string, parejas: Array<{clave: string; valor: string}>) {
+	async sustituyeClaves(SxmlDoc: string, parejas: Map<string, string>, nombre: string) {
 		console.log('Comienza sustituyeClaves');
-		let documento: string = '';
-		let index: number = 0;
-		let indexTemp: number = 0;
-		while (index !== -1) {
-			index = SxmlDoc.indexOf('{{', index);
-			if (index !== -1) {
-				const indexEnd = SxmlDoc.indexOf('}}', index);
-				if (indexEnd !== -1) {
-					let clave = SxmlDoc.substring(index + 2, indexEnd);
-					clave = clave.replace(/<.*?>/g, '');
-					let valor = '';
-					if (clave[0] === '@') {
-						const generos: string = (document.querySelector('input[name="generos"]:checked') as HTMLInputElement).value;
-						if (generos === 'masculino') {
-							valor = clave.substring(1, clave.indexOf('/'));
-						} else {
-							valor = clave.substring(clave.indexOf('/') + 1);
-						}
-					} else if (clave[0] === '#') {
-						const plurales: string = (document.querySelector('input[name="plurales"]:checked') as HTMLInputElement).value;
-						if (plurales === 'singular') {
-							valor = clave.substring(1, clave.indexOf('/'));
-						} else {
-							valor = clave.substring(clave.indexOf('/') + 1);
-						}
-					} else {
-						parejas.forEach((par) => {
-							if (par.clave === clave) {
-								valor = par.valor;
-							}
-						});
-					}
+		let documento: string = SxmlDoc;
 
-					documento = documento + SxmlDoc.substring(indexTemp, index) + valor;
+		if(this.plantilla.referencias.get(nombre)) {
+			const preferencias: {inicio: number; fin: number}[] = this.plantilla.referencias.get(nombre);
+			let differencia: number = 0;
+			preferencias.forEach((par: {inicio: number; fin: number}) => {
+				const clave_entera: string = documento.substring(par.inicio + (differencia), par.fin + (differencia));
+				console.log('Documento: ' + nombre + ' Clave: ' + clave_entera);
+				let clave: string = clave_entera.substring(2,clave_entera.length-2);
+				clave = clave.replace(/<.*?>/g, '');
+				let valor: string = '';
+				switch(clave[0]) {
+				case '@':
+					const generos: string = (document.querySelector('input[name="generos"]:checked') as HTMLInputElement).value;
+					valor = generos === 'masculino' ? clave.substring(1, clave.indexOf('/')) : clave.substring(clave.indexOf('/') + 1);
+					break;
+					
+				case '#':
+					const plurales: string = (document.querySelector('input[name="plurales"]:checked') as HTMLInputElement).value;
+					valor = plurales === 'singular' ? clave.substring(1, clave.indexOf('/')) : clave.substring(clave.indexOf('/') + 1);
+					break;
 
-					index = indexEnd;
-					indexTemp = indexEnd + 2;
+				default:
+					valor = parejas.get(clave);	
 				}
-			}
+				documento = documento.substring(0, par.inicio + differencia)+ valor + documento.substring(par.fin + differencia);
+				differencia = differencia + (valor.length - clave_entera.length);
+			});
 		}
-		documento = documento + SxmlDoc.substring(indexTemp);
 		return documento;
 	}
 
