@@ -51,15 +51,17 @@
                         </label>
                     </form>
                 }
+
                 @for (clave of this.plantilla.claves; track clave) {
-                    @if(clave === "$$$") {
-                        <input type="text" placeholder="Numero Documento" id="{{clave}}" class="campoValido" value="" >
-                        <input type="checkbox" id="numeroDocAuto" class="checkbox" [(ngModel)]="this.plantilla.numeroDocumento"> Genera automáticamente el numero de documento?
-                        <br>
-                    }@else {
+					@if(clave !== '$$$') {
                         <input type="text" placeholder="{{clave}}" id="{{clave}}" class="campoVacio" value="" >
+                        <br> 
+					}
+					@else {
+						<input type="text" placeholder="Numero Documento" id={{clave}} class="campoValido" value="" >
+                        <input type="checkbox" id="numeroDocAuto" class="checkbox" checked [(ngModel)]="this.plantilla.numeroDocumento"> Genera automáticamente el numero de documento?
                         <br>
-                    } 
+					}
                 }
                 <button type="submit" class="creaDocumento" (click)="creaDocumento()">Crea Documento</button>
                 @if(this.estadoCreacionArchivo) {

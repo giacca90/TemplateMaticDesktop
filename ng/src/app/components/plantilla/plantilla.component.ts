@@ -1,14 +1,14 @@
-import { Component, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Status } from '../status/status.component'; 
-import { StatusService } from '../../services/status.service'; 
-import { PlantillaService } from '../../services/plantilla.service';
-import { ClientesService } from '../../services/clientes.service';
-import { IpcService } from '../../services/ipc-render.service';
-import { FormsModule } from '@angular/forms';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { ClienteDinamico } from '../../objects/cliente';
-import { Documento } from '../../objects/documento';
+import {Component, inject, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {Status} from '../status/status.component';
+import {StatusService} from '../../services/status.service';
+import {PlantillaService} from '../../services/plantilla.service';
+import {ClientesService} from '../../services/clientes.service';
+import {IpcService} from '../../services/ipc-render.service';
+import {FormsModule} from '@angular/forms';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {ClienteDinamico} from '../../objects/cliente';
+import {Documento} from '../../objects/documento';
 import JSZip from 'jszip';
 
 @Component({
@@ -16,9 +16,9 @@ import JSZip from 'jszip';
 	standalone: true,
 	imports: [FormsModule, NgSelectModule],
 	templateUrl: './plantilla.component.html',
-	styleUrl: './plantilla.component.css',
+	styleUrl: './plantilla.component.css'
 })
-export class PlantillaComponent implements OnDestroy{
+export class PlantillaComponent implements OnDestroy {
 	route: ActivatedRoute = inject(ActivatedRoute);
 	id: number;
 	nuevoFile: File;
@@ -26,8 +26,8 @@ export class PlantillaComponent implements OnDestroy{
 	selected: string;
 	estadoCreacionArchivo: boolean = false;
 	progresoCreacionArchivo: number = 0;
-	cortina:boolean = false;
-	clientesTemporales:Array<ClienteDinamico>;
+	cortina: boolean = false;
+	clientesTemporales: Array<ClienteDinamico>;
 	plantilla: Documento = null;
 
 	progresoCargaInicial: number;
@@ -36,26 +36,26 @@ export class PlantillaComponent implements OnDestroy{
 	imagen: Blob | string = null;
 
 	constructor(
-    public PS: PlantillaService,
-    public CS: ClientesService,
-    public SS: StatusService,
-    public IPC: IpcService,
-    private cdr: ChangeDetectorRef
+		public PS: PlantillaService,
+		public CS: ClientesService,
+		public SS: StatusService,
+		public IPC: IpcService,
+		private cdr: ChangeDetectorRef
 	) {
 		IPC.clear();
 		this.clientesTemporales = this.CS.clientes;
 		this.id = this.route.snapshot.queryParams['id'];
 
-		if(this.id) {
+		if (this.id) {
 			this.plantilla = PS.getPlantillaForId(this.id);
-			console.log('Plantilla: '+this.plantilla.toString());
+			console.log('Plantilla: ' + this.plantilla.toString());
 			if (this.plantilla.file === null) {
 				IPC.send('busca', this.plantilla.address);
 				IPC.on('arraybuffer', (_event, arraybuffer: ArrayBuffer) => {
 					this.plantilla.file = new File([arraybuffer], this.plantilla.nombre);
 					console.log('nombre: ' + this.plantilla.nombre);
 					console.log('ruta: ' + this.plantilla.address);
-					this.cargaInicial();					
+					this.cargaInicial();
 					this.plantilla.abrirArchivo();
 				});
 			} else {
@@ -67,14 +67,14 @@ export class PlantillaComponent implements OnDestroy{
 
 	//TODO: tendrá que destruir el objecto Documento
 	ngOnDestroy(): void {
-		if(this.plantilla.worker !== null) {
+		if (this.plantilla.worker !== null) {
 			this.plantilla.worker.terminate();
 		}
 	}
 
-	cargaInicial () {
+	cargaInicial() {
 		this.plantilla.estadoCargaInicial.subscribe((estado: boolean) => {
-			console.log('estado carga inicial');
+			console.log('estado carga inicial: '+ estado);
 			this.estadoCargaInicial = estado;
 			this.cdr.detectChanges();
 		});
@@ -85,7 +85,7 @@ export class PlantillaComponent implements OnDestroy{
 		});
 
 		this.plantilla.vista.subscribe((vista: Blob | string) => {
-			if(vista instanceof Blob) {
+			if (vista instanceof Blob) {
 				const reader = new FileReader();
 				reader.readAsDataURL(vista);
 				reader.onload = () => {
@@ -99,22 +99,22 @@ export class PlantillaComponent implements OnDestroy{
 				};
 			}
 
-			if(typeof vista === 'string') {
+			if (typeof vista === 'string') {
 				const view = document.getElementById('contentContainer');
 				view.innerHTML = '<div id="contenido" style="width: 100%; height: 100%; overflow: hidden;">' + vista + '</div>';
 			}
 		});
 	}
-	
+
 	cambiaColor() {
 		for (const clave of this.plantilla.claves) {
-			console.log('Clave: '+clave);
+			console.log('Clave: ' + clave);
 			const campo = document.getElementById(clave) as HTMLInputElement;
 			campo.addEventListener('change', () => {
-				if(campo.value.length === 0) {
+				if (campo.value.length === 0) {
 					campo.classList.remove('campoValido');
 					campo.classList.add('campoVacio');
-				}else{
+				} else {
 					campo.classList.remove('campoVacio');
 					campo.classList.add('campoValido');
 				}
@@ -122,16 +122,16 @@ export class PlantillaComponent implements OnDestroy{
 		}
 		const numeroDocAuto = document.getElementById('numeroDocAuto') as HTMLInputElement;
 		const campoNumeroDocumento = document.getElementById('$$$');
-		if(numeroDocAuto) {
+		if (numeroDocAuto) {
 			numeroDocAuto.addEventListener('change', () => {
-				if(numeroDocAuto) {
-					if(numeroDocAuto.checked === true) {
-						if(campoNumeroDocumento) {
+				if (numeroDocAuto) {
+					if (numeroDocAuto.checked === true) {
+						if (campoNumeroDocumento) {
 							campoNumeroDocumento.classList.remove('campoVacio');
 							campoNumeroDocumento.classList.add('campoValido');
 						}
-					}else{
-						if(campoNumeroDocumento) {
+					} else {
+						if (campoNumeroDocumento) {
 							campoNumeroDocumento.classList.remove('campoValido');
 							campoNumeroDocumento.classList.add('campoVacio');
 						}
@@ -146,80 +146,69 @@ export class PlantillaComponent implements OnDestroy{
 		this.nuevoFile = this.plantilla.file;
 		this.estadoCreacionArchivo = true;
 		this.cdr.detectChanges();
-		const fecha:Date = new Date();
-		let numeroDocumento = ''; 
-		const parejas: Array<{ clave: string; valor: string }> = [];
-		const parejaStringArray:string[] = [];
+		const fecha: Date = new Date();
+		let numeroDocumento = '';
+		const parejas: Array<{clave: string; valor: string}> = [];
+		const parejaStringArray: string[] = [];
 		for (const clave of this.plantilla.claves) {
 			const ele = document.getElementById(clave) as HTMLInputElement;
-			let val:string;
-			if(clave === '$$$' && this.plantilla.numeroDocumento === true) {
-				numeroDocumento = fecha.getFullYear().toString()+(fecha.getMonth()+1).toString()+fecha.getDate().toString()+fecha.getHours().toString()+fecha.getMinutes().toString()+fecha.getSeconds().toString();
+			let val: string;
+			if (clave === '$$$' && this.plantilla.numeroDocumento === true) {
+				numeroDocumento =
+					fecha.getFullYear().toString() +
+					(fecha.getMonth() + 1).toString() +
+					fecha.getDate().toString() +
+					fecha.getHours().toString() +
+					fecha.getMinutes().toString() +
+					fecha.getSeconds().toString();
 				val = numeroDocumento;
-			}else if (clave === '$$$' && this.plantilla.numeroDocumento === false) {
+			} else if (clave === '$$$' && this.plantilla.numeroDocumento === false) {
 				val = ele.value;
 				numeroDocumento = ele.value;
-			}
-			else {
+			} else {
 				val = ele.value;
-				parejaStringArray.push(clave+': '+val);
+				parejaStringArray.push(clave + ': ' + val);
 			}
-			const par = { clave: clave, valor: val };
+			const par = {clave: clave, valor: val};
 			parejas.push(par);
 		}
-		/*     console.log('PAREJAS:');
-    for (let pareja of parejas) {
-      console.log('Clave: ' + pareja.clave + ' Valor: ' + pareja.valor);
-    }
- */
-		// Descomprime el archivo
-		console.log('Comienza a abrir el archivo');
-		const zip = await JSZip().loadAsync(this.plantilla.file);
-		// Obtener la lista de archivos
-		console.log('Obtiene lista de archivos');
-		const archivos: string[] = Object.keys(zip.files);
-		//    archivos.forEach(ar => console.log(ar));
-		// Procesar cada archivo
-		console.log('Comienza a analizar cada archivo:');
-		for (let i = 0; i < archivos.length; i++) {
-			if (archivos[i].endsWith('xml')) {
-				console.log('ARCHIVO INTERNO: '+ archivos[i]);
-				const contenido = await zip.file(archivos[i]).async('text');
-				// Ahora puedes procesar el contenido XML como desees
-				const parser = new DOMParser();
-				const xmlDoc = parser.parseFromString(contenido, 'text/xml');
-				const serializer = new XMLSerializer();
-				const SxmlDoc = serializer.serializeToString(xmlDoc);
-				//        console.log("Archivo:\n"+SxmlDoc);
-				await this.sustituyeClaves(SxmlDoc, parejas, archivos[i]);
-			}
-			this.progresoCreacionArchivo = ((i + 1) / archivos.length) * 100;
-			this.cdr.detectChanges();
-		}
+
+		const nuevosContenidos: Map<string,string> = new Map<string, string>;
+		this.plantilla.contenido.forEach(async (contenido: string, nombre: string) => {
+			nuevosContenidos.set(nombre, await this.sustituyeClaves(contenido, parejas));
+		});
+		const zip = new JSZip();
+		// Lee el contenido del archivo original
+		const originalZip = await zip.loadAsync(this.nuevoFile);
+		// Sustituye el contenido XML modificado
+		console.log('Sustituye el contenido XML modificado');
+		nuevosContenidos.forEach((contenido: string, nombre: string) => {
+			originalZip.file(nombre, contenido);
+		});
+		// Crea el nuevo archivo
+		this.nuevoFile = (await originalZip.generateAsync({
+			type: 'blob'
+		})) as File;
+
 		console.log('Comienza la descarga del documento modificado');
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(this.nuevoFile);
-		let nombreFinal:string = '';
-		if(this.plantilla.claves.includes('$$$')) {
-			nombreFinal = numeroDocumento+'_'+this.plantilla.file.name;
-		}else{
+		let nombreFinal: string = '';
+		if (this.plantilla.claves.includes('$$$')) {
+			nombreFinal = numeroDocumento + '_' + this.plantilla.file.name;
+		} else {
 			nombreFinal = 'rellenado_' + this.plantilla.file.name;
 		}
-		link.download = nombreFinal; 
+		link.download = nombreFinal;
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
-		const status = new Status((this.SS.getStatus().length+1), this.plantilla.file.name, parejaStringArray, numeroDocumento, Date()); 
+		const status = new Status(this.SS.getStatus().length + 1, this.plantilla.file.name, parejaStringArray, numeroDocumento, Date());
 		this.SS.addStatus(status, true);
-		if(this.IPC.isElectron())
-			this.IPC.send('addStatus', status.toString());
-	} 
+		if (this.IPC.isElectron()) this.IPC.send('addStatus', status.toString());
+	}
 
-	async sustituyeClaves(
-		SxmlDoc: string,
-		parejas: Array<{ clave: string; valor: string }>,
-		nombreArchivo: string
-	) {
+	async sustituyeClaves(SxmlDoc: string, parejas: Array<{clave: string; valor: string}>) {
 		console.log('Comienza sustituyeClaves');
 		let documento: string = '';
 		let index: number = 0;
@@ -232,28 +221,28 @@ export class PlantillaComponent implements OnDestroy{
 					let clave = SxmlDoc.substring(index + 2, indexEnd);
 					clave = clave.replace(/<.*?>/g, '');
 					let valor = '';
-					if(clave[0] === '@') {
-						const generos:string = (document.querySelector('input[name="generos"]:checked') as HTMLInputElement).value;
-						if(generos === 'masculino') {
-							valor = clave.substring(1,clave.indexOf('/'));
-						}else{
-							valor = clave.substring(clave.indexOf('/')+1);
+					if (clave[0] === '@') {
+						const generos: string = (document.querySelector('input[name="generos"]:checked') as HTMLInputElement).value;
+						if (generos === 'masculino') {
+							valor = clave.substring(1, clave.indexOf('/'));
+						} else {
+							valor = clave.substring(clave.indexOf('/') + 1);
 						}
-					}else if(clave[0] === '#') {
-						const plurales:string = (document.querySelector('input[name="plurales"]:checked') as HTMLInputElement).value;
-						if(plurales === 'singular') {
-							valor = clave.substring(1,clave.indexOf('/'));
-						}else{
-							valor = clave.substring(clave.indexOf('/')+1);
+					} else if (clave[0] === '#') {
+						const plurales: string = (document.querySelector('input[name="plurales"]:checked') as HTMLInputElement).value;
+						if (plurales === 'singular') {
+							valor = clave.substring(1, clave.indexOf('/'));
+						} else {
+							valor = clave.substring(clave.indexOf('/') + 1);
 						}
-					}else{
+					} else {
 						parejas.forEach((par) => {
 							if (par.clave === clave) {
 								valor = par.valor;
 							}
 						});
 					}
-          
+
 					documento = documento + SxmlDoc.substring(indexTemp, index) + valor;
 
 					index = indexEnd;
@@ -262,30 +251,10 @@ export class PlantillaComponent implements OnDestroy{
 			}
 		}
 		documento = documento + SxmlDoc.substring(indexTemp);
-		//    console.log('DOCUMENTO: \n\n' + documento);
-		await this.replaceXmlInCopy(this.nuevoFile, documento, nombreArchivo);
+		return documento;
 	}
 
-	async replaceXmlInCopy(
-		originalBlob: File,
-		modifiedXml: string,
-		outputPath: string
-	) {
-		const zip = new JSZip();
-		console.log('Comienza replaceXml');
-		// Lee el contenido del archivo original
-		const originalZip = await zip.loadAsync(originalBlob);
-		// Sustituye el contenido XML modificado
-		console.log('Sustituye el contenido XML modificado');
-		originalZip.file(outputPath, modifiedXml);
-		// Crea el nuevo archivo
-		this.nuevoFile = (await originalZip.generateAsync({
-			type: 'blob',
-		})) as File;
-		console.log('crea nuevo archivo');
-	}
-
-	completa(id:number) {
+	completa(id: number) {
 		const cliente: ClienteDinamico = this.CS.getClienteForId(id);
 		console.log('Cliente obtenido: ' + cliente.toString());
 		for (const atributo of cliente.atributos) {
@@ -304,11 +273,11 @@ export class PlantillaComponent implements OnDestroy{
 	}
 
 	buscaCliente() {
-		const val:string = (document.getElementById('opciones') as HTMLInputElement).value;
-		console.log('buscaCliente: '+val);
+		const val: string = (document.getElementById('opciones') as HTMLInputElement).value;
+		console.log('buscaCliente: ' + val);
 		this.clientesTemporales = [];
 		this.CS.clientes.forEach((cliente) => {
-			if(cliente.toString().toLowerCase().includes(val.toLowerCase())){
+			if (cliente.toString().toLowerCase().includes(val.toLowerCase())) {
 				this.clientesTemporales.push(cliente);
 			}
 		});
@@ -319,5 +288,4 @@ export class PlantillaComponent implements OnDestroy{
 		this.cortina = true;
 		this.cdr.detectChanges();
 	}
-  
 }

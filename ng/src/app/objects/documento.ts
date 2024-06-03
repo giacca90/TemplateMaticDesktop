@@ -1,20 +1,20 @@
 import JSZip from 'jszip';
-import { BehaviorSubject } from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
 export class Documento {
 	id: number;
 	file: File;
 	nombre: string;
 	address: string;
-	contenido: Map<string, string> = new Map<string, string>; //Cada .xml del File <nombre, contenido>
-	referencias: Map<string, {inicio: number, fin: number}[]> = new Map<string, {inicio: number, fin: number}[]>; //Las llaves <nombreXML, {inicioLlave, finLlave}
+	contenido: Map<string, string> = new Map<string, string>(); //Cada .xml del File <nombre, contenido>
+	referencias: Map<string, {inicio: number; fin: number}[]> = new Map<string, {inicio: number; fin: number}[]>(); //Las llaves <nombreXML, {inicioLlave, finLlave}
 	claves: string[] = [];
 	worker: Worker | null = null;
 
 	generos: boolean = false;
 	plurales: boolean = false;
 	numeroDocumento: boolean = false;
-	
+
 	progresoCargaInicial = new BehaviorSubject<number>(0);
 	estadoCargaInicial = new BehaviorSubject<boolean>(true);
 	vista = new BehaviorSubject<Blob | string>(null);
@@ -23,10 +23,12 @@ export class Documento {
 	constructor(_id: number, _file: File, _nombre?: string, _address?: string) {
 		this.id = _id;
 		this.file = _file;
-		if (_file !== null) {  //versión web
+		if (_file !== null) {
+			//versión web
 			this.nombre = _file.name;
 			this.address = _file.webkitRelativePath;
-		} else {  //versión electron
+		} else {
+			//versión electron
 			this.nombre = _nombre;
 			this.address = _address;
 		}
@@ -38,7 +40,7 @@ export class Documento {
 
 	public async abrirArchivo() {
 		console.log('Abrir archivo!!!');
-		if(this.file != null) {
+		if (this.file != null) {
 			// Descomprime el archivo
 			const zip = await JSZip().loadAsync(this.file);
 			// Obtener la lista de archivos
@@ -60,34 +62,45 @@ export class Documento {
 			this.estadoCargaInicial.next(false);
 
 			if (this.file.name.endsWith('odt')) {
-				this.vista.next(await zip.file('Thumbnails/thumbnail.png').async('blob')); 
+				this.vista.next(await zip.file('Thumbnails/thumbnail.png').async('blob'));
 			}
 			if (this.file.name.endsWith('docx')) {
 				this.vistaDocx();
 			}
 		}
-		
 	}
 
 	private buscaClaves(fileString: string, nombre: string) {
 		let index: number = 0;
-		const array: {inicio: number, fin: number}[] = [];
+		const array: {inicio: number; fin: number}[] = [];
 		while (index !== -1) {
 			index = fileString.indexOf('{{', index);
 			if (index !== -1) {
 				const indexEnd = fileString.indexOf('}}', index);
 				if (indexEnd !== -1) {
-					array.push({inicio: index, fin: (indexEnd + 2)});
+					array.push({inicio: index, fin: indexEnd + 2});
 					let clave = fileString.substring(index + 2, indexEnd);
 					clave = clave.replace(/<.*?>/g, '');
-					if (clave[0] === '@') {
+					
+					switch (clave[0]) {
+					case '@':
 						this.generos = true;
-					} else if (clave[0] === '#') {
+						break;
+
+					case '#':
 						this.plurales = true;
-					} else if (!this.claves.includes(clave)) {
-						this.claves.push(clave);
-						if (clave === '$$$') {
+						break;
+
+					case '$':
+						if (!this.claves.includes(clave)) {
 							this.numeroDocumento = true;
+							this.claves.push(clave);
+						}
+						break;
+
+					default:
+						if (!this.claves.includes(clave)) {
+							this.claves.push(clave);
 						}
 					}
 					index = indexEnd;
@@ -95,26 +108,22 @@ export class Documento {
 			}
 		}
 		this.referencias.set(nombre, array);
-		//		console.log('Se han encontrado ' + this.claves.length + ' claves');
 	}
-
 
 	async vistaDocx() {
 		if (typeof Worker !== 'undefined') {
 			// Create a new
-			this.worker = new Worker(
-				new URL('../../app/workers/vista-docx.worker', import.meta.url)
-			);
+			this.worker = new Worker(new URL('../../app/workers/vista-docx.worker', import.meta.url));
 			this.worker.postMessage(this.file);
-			this.worker.onmessage = ({ data }) => {
+			this.worker.onmessage = ({data}) => {
 				this.vista.next(data);
 			};
 		} else {
 			this.vista.next('<h3 text-color: red>NO SE PUEDE CARGAR UNA VISTA PREVIA!!!</h3>');
 		}
 	}
-	
+
 	toString() {
-		return this.nombre;
+		return 'Nombre Plantilla: '+this.nombre+' Total claves: '+this.claves.length;
 	}
 }
