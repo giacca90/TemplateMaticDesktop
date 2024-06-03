@@ -1,0 +1,32 @@
+h3 {
+    color: green;
+}
+
+button {
+    margin: 5px;
+}
+
+.error{
+    color: red;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px; 
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: grey;
+  }
+  
+  thead tr:first-child {
+    font-weight: bold;
+    background-color: grey;
+  }

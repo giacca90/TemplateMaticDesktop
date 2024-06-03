@@ -1,0 +1,77 @@
+<h3>Guía de uso del programa.</h3>
+<br />
+<div class="scroll">
+  <p>
+    Este programa permite rellenar plantillas preparadas de la siguiente manera:
+  </p>
+  <br />
+  <p>
+    Los campos que sean variables hay que marcarlos con {{ "{{" }}Clave{{'}}'}}.
+  </p>
+  <p>
+    Las Claves tienen que ser las mismas que se encuentren en el CSV de los
+    clientes.
+  </p>
+  <p>
+    Por ejemplo {{ "{{" }}nombre{{'}}'}} {{ "{{" }}apellido{{'}}'}}
+    {{ "{{" }}fechaNacimiento{{'}}'}}.
+  </p>
+  <p>
+    Entonces, antes hay que ver cuales son los datos de los clientes antes de
+    crear la plantilla.
+  </p>
+  <p>
+    O pedir a los clientes todos los datos que necesites en todas las
+    plantillas.
+  </p>
+  <p>
+    En el caso en que en una plantilla haya un dato que no se encuentra en el
+    CSV se puede insertar a mano.
+  </p>
+  <br />
+  <p>
+    El campo {{ "{{" }}$$${{'}}'}} se sustituye por un numero único consecutivo,
+    util como numero de documento.
+  </p>
+  <p>Se puede crear automático o insertar manualmente.</p>
+  <br />
+  <p>
+    El campo {{ "{{" }}{{ "@" }}masculino/femenino{{'}}'}} sirve para dar Genero
+    al documento.
+  </p>
+  <p>
+    A encontrarse este campo, el programa pedirá si el cliente es Hombre o
+    Mujer, y utilizará
+  </p>
+  <p>
+    en el caso de un Hombre el texto que haya antes del /, y en el caso de una
+    Mujer el texto que haya después del /.
+  </p>
+  <br />
+  <p>
+    El campo {{ "{{" }}#singular/plural{{'}}'}} sirve para el caso de plurales.
+  </p>
+  <p>
+    A encontrarse este campo, el programa pedirá si el cliente es uno o más de
+    uno, y utilizará
+  </p>
+  <p>
+    en el caso de un solo cliente el texto que haya antes del /, y en el caso de
+    más de un cliente el texto que haya después del /.
+  </p>
+  <br />
+  <p>EJEMPLO:</p>
+  <br />
+  <p>Documento numero: {{ "{{" }}$$${{'}}'}}</p>
+  <p>
+    Yo, {{ "{{" }}nombreREML{{'}}'}}: {{ "{{" }}{{ "@" }}un Hombre vivo/una
+    Mujer viva{{'}}'}}, Sui Iuris, en plenas capacidades para tomar decisiones
+  </p>
+  <p>
+    {{ "{{" }}{{ "@" }}Progenitor/Progenitora{{'}}'}} {{ "{{" }}#del niño/de los
+    niños{{'}}'}}:
+  </p>
+  <p>. . .</p>
+</div>
+<br />
+<p>En caso de errores, puedes abrir la consola con el atajo Ctlr+Alt+I</p>
