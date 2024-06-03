@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ClienteDinamico } from '../objects/cliente';
+import { ClienteDinamico } from '../agregar/agregar.component';
 
 @Injectable({
 	providedIn: 'root'

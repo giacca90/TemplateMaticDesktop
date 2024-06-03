@@ -1,10 +1,9 @@
 import { Component, OnInit,  ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PlantillaComponent } from '../components/plantilla/plantilla.component';
-import { PlantillaService } from '../services/plantilla.service';
-import { Documento } from '../objects/documento';
-import { AgregarComponent } from '../components/agregar/agregar.component';
-import { StatusComponent } from '../components/status/status.component';
+import { PlantillaComponent } from '../plantilla/plantilla.component';
+import { PlantillaService, Plantilla } from '../services/plantilla.service';
+import { AgregarComponent } from '../agregar/agregar.component';
+import { StatusComponent } from '../status/status.component';
 import { IpcService } from '../services/ipc-render.service';
 
 @Component({
@@ -15,7 +14,7 @@ import { IpcService } from '../services/ipc-render.service';
 	styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
-	public plantillasBuscadas: Array<Documento> = [];
+	public plantillasBuscadas: Array<Plantilla> = [];
 
 	constructor(public PS: PlantillaService, public ipcRenderer: IpcService, private cdr: ChangeDetectorRef) {  }
 
@@ -24,12 +23,13 @@ export class HomeComponent implements OnInit {
 			this.plantillasBuscadas = this.PS.getTemp();
 		} 
 		if(this.ipcRenderer.isElectron()) { 
-			const plantillas:Documento[] = [];
+			const plantillas:Plantilla[] = [];
 			this.ipcRenderer.send('PersistenciaCarpeta');
 			this.ipcRenderer.on('Carpeta', (_event, files:string[]) => {
 				for(let i=0; i<files.length; i++) {
+					//            console.log("Prueba: "+files[i]);
 					if(files[i].endsWith('odt') || files[i].endsWith('docx')) 
-						plantillas.push(new Documento(i+1, null, files[i].split('/').slice(-1)[0], files[i]));
+						plantillas.push(new Plantilla(i+1, null, files[i].split('/').slice(-1)[0], files[i]));
 				}
 				this.PS.setTemp(plantillas);
 				this.plantillasBuscadas = plantillas;
@@ -49,13 +49,13 @@ export class HomeComponent implements OnInit {
 			selector.onchange = () => {
 				this.PS.setTemp([]);
 				if (selector.files) {  
-					const plantillas:Documento[] = [];
+					const plantillas:Plantilla[] = [];
 					for (let i = 0; i < selector.files.length; i++) {
 						if (
 							selector.files[i].name.endsWith('odt') ||
                 selector.files[i].name.endsWith('docx')
 						) {
-							plantillas.push(new Documento(i + 1, selector.files[i]));
+							plantillas.push(new Plantilla(i + 1, selector.files[i]));
 						}
 					}
 					this.PS.setTemp(plantillas);
@@ -86,13 +86,13 @@ export class HomeComponent implements OnInit {
 	abreDialog() {
 		this.ipcRenderer.send('openDialog');
 		this.ipcRenderer.on('archivos-de-carpeta', (event, files) => {
-			const plantillas: Documento[] = [];
+			const plantillas: Plantilla[] = [];
 			for(let i=0; i<files.length; i++) {
 				if (
 					files[i].name.endsWith('odt') ||
           files[i].name.endsWith('docx')
 				) {
-					plantillas.push(new Documento(i+1,null,files[i].name,files[i].ruta));
+					plantillas.push(new Plantilla(i+1,null,files[i].name,files[i].ruta));
 				}
 			}
 			this.PS.setTemp(plantillas);
