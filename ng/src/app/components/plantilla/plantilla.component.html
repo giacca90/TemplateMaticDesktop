@@ -1,4 +1,4 @@
-<h1>{{nombre}}</h1>
+<h1>{{plantilla.nombre}}</h1>
 @if(this.CS.clientes.length === 0) {
     <p style="color: red; text-align: center;">No se ha cargado un listado de clientes!!!</p>
     <p style="color: red; text-align: center;">Si quieres autocompletar la plantilla de forma automática carga un SCV en la sección Agregar </p>
@@ -11,13 +11,13 @@
             </div>
         </div>
         <div class="col" id="form">
-            @if(this.estadoCargaInicial) {
+            @if(estadoCargaInicial) {
                 <p>Espere por favor...</p>
                 <div class="progress-container">
-                    <div class="progress-bar" [style.width]="progresoCargaInicial + '%'"></div>
+                    <div class="progress-bar" [style.width]="this.plantilla.progresoCargaInicial + '%'"></div>
                 </div>
             }
-            @if(this.progresoCargaInicial === 100) {
+            @if(progresoCargaInicial === 100) {
                 @if(this.CS.clientes.length > 0) {
                     <label for="opciones">Selecciona una opción: </label>
                     <input type="text" id="opciones" name="opciones" placeholder="Escribe o selecciona" (input)="buscaCliente()" (click)="this.abreCortina()">
@@ -29,7 +29,7 @@
                         </div>
                     }
                 }
-                @if(this.generos === true) {
+                @if(this.plantilla.generos === true) {
                     <form>
                         <label>
                           <input type="radio" class="radio" name="generos" value="masculino" checked> Varón 
@@ -40,7 +40,7 @@
                         </label>
                     </form>
                 }
-                @if(this.plurales === true) {
+                @if(this.plantilla.plurales === true) {
                     <form>
                         <label>
                           <input type="radio" class="radio" name="plurales" value="singular" checked> Cliente 
@@ -51,10 +51,10 @@
                         </label>
                     </form>
                 }
-                @for (clave of this.claves; track clave) {
+                @for (clave of this.plantilla.claves; track clave) {
                     @if(clave === "$$$") {
                         <input type="text" placeholder="Numero Documento" id="{{clave}}" class="campoValido" value="" >
-                        <input type="checkbox" id="numeroDocAuto" class="checkbox" [(ngModel)]="numeroDocumento"> Genera automáticamente el numero de documento?
+                        <input type="checkbox" id="numeroDocAuto" class="checkbox" [(ngModel)]="this.plantilla.numeroDocumento"> Genera automáticamente el numero de documento?
                         <br>
                     }@else {
                         <input type="text" placeholder="{{clave}}" id="{{clave}}" class="campoVacio" value="" >

@@ -1,23 +1,23 @@
 import JSZip from 'jszip';
+import { BehaviorSubject } from 'rxjs';
 
 export class Documento {
 	id: number;
 	file: File;
 	nombre: string;
 	address: string;
-	contenido: Map<string, string>; //Cada .xml del File <nombre, contenido>
-	referencias: Map<string, {inicio: number, fin: number}[] >; //Las llaves <nombreXML, {inicioLlave, finLlave}
-	vista: Blob | string;
-
-	progresoCargaInicial: number = 0;
-	estadoCreacionArchivo: boolean = false;
-	estadoCargaInicial: boolean = true;
-	worker: Worker | null = null;
+	contenido: Map<string, string> = new Map<string, string>; //Cada .xml del File <nombre, contenido>
+	referencias: Map<string, {inicio: number, fin: number}[]> = new Map<string, {inicio: number, fin: number}[]>; //Las llaves <nombreXML, {inicioLlave, finLlave}
 	claves: string[] = [];
+	worker: Worker | null = null;
+
 	generos: boolean = false;
 	plurales: boolean = false;
 	numeroDocumento: boolean = false;
-
+	
+	progresoCargaInicial = new BehaviorSubject<number>(0);
+	estadoCargaInicial = new BehaviorSubject<boolean>(true);
+	vista = new BehaviorSubject<Blob | string>(null);
 
 	//TODO: Buscar las dos invocaciones del constructor
 	constructor(_id: number, _file: File, _nombre?: string, _address?: string) {
@@ -37,6 +37,7 @@ export class Documento {
 	}
 
 	public async abrirArchivo() {
+		console.log('Abrir archivo!!!');
 		if(this.file != null) {
 			// Descomprime el archivo
 			const zip = await JSZip().loadAsync(this.file);
@@ -54,12 +55,12 @@ export class Documento {
 					this.contenido.set(archivos[i], SxmlDoc);
 					this.buscaClaves(SxmlDoc, archivos[i]);
 				}
-				this.progresoCargaInicial = ((i + 1) / archivos.length) * 100;
+				this.progresoCargaInicial.next(((i + 1) / archivos.length) * 100);
 			}
-			this.estadoCargaInicial = false;
+			this.estadoCargaInicial.next(false);
 
 			if (this.file.name.endsWith('odt')) {
-				this.vista = await zip.file('Thumbnails/thumbnail.png').async('blob');
+				this.vista.next(await zip.file('Thumbnails/thumbnail.png').async('blob')); 
 			}
 			if (this.file.name.endsWith('docx')) {
 				this.vistaDocx();
@@ -106,14 +107,14 @@ export class Documento {
 			);
 			this.worker.postMessage(this.file);
 			this.worker.onmessage = ({ data }) => {
-				this.vista = data;
+				this.vista.next(data);
 			};
 		} else {
-			this.vista = '<h3 text-color: red>NO SE PUEDE CARGAR UNA VISTA PREVIA!!!</h3>';
+			this.vista.next('<h3 text-color: red>NO SE PUEDE CARGAR UNA VISTA PREVIA!!!</h3>');
 		}
 	}
 	
 	toString() {
-		return this.id + ': ' + this.nombre;
+		return this.nombre;
 	}
 }

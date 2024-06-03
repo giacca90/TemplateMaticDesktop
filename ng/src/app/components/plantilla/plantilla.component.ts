@@ -21,23 +21,19 @@ import JSZip from 'jszip';
 export class PlantillaComponent implements OnDestroy{
 	route: ActivatedRoute = inject(ActivatedRoute);
 	id: number;
-	file: File;
-	nombre: string;
-	ruta: string;
-	claves: string[] = [];
 	nuevoFile: File;
 	path: string;
 	selected: string;
-	estadoCargaInicial: boolean = true;
-	progresoCargaInicial: number = 0;
 	estadoCreacionArchivo: boolean = false;
 	progresoCreacionArchivo: number = 0;
-	worker: Worker | null = null;
-	numeroDocumento: boolean = false;
-	generos: boolean = false;
-	plurales: boolean = false;
 	cortina:boolean = false;
 	clientesTemporales:Array<ClienteDinamico>;
+	plantilla: Documento = null;
+
+	progresoCargaInicial: number;
+	estadoCargaInicial: boolean;
+
+	imagen: Blob | string = null;
 
 	constructor(
     public PS: PlantillaService,
@@ -51,36 +47,67 @@ export class PlantillaComponent implements OnDestroy{
 		this.id = this.route.snapshot.queryParams['id'];
 
 		if(this.id) {
-			const plantilla: Documento = PS.getPlantillaForId(this.id);
-			this.file = plantilla.file;
-			if (this.file === null) {
-				IPC.send('busca', plantilla.address);
+			this.plantilla = PS.getPlantillaForId(this.id);
+			console.log('Plantilla: '+this.plantilla.toString());
+			if (this.plantilla.file === null) {
+				IPC.send('busca', this.plantilla.address);
 				IPC.on('arraybuffer', (_event, arraybuffer: ArrayBuffer) => {
-					this.file = new File([arraybuffer], plantilla.nombre);
-					plantilla.file = this.file;
-					this.nombre = plantilla.nombre;
-					console.log('nombre: ' + this.nombre);
-					this.ruta = plantilla.address;
-					console.log('ruta: ' + this.ruta);
+					this.plantilla.file = new File([arraybuffer], this.plantilla.nombre);
+					console.log('nombre: ' + this.plantilla.nombre);
+					console.log('ruta: ' + this.plantilla.address);
+					this.cargaInicial();					
+					this.plantilla.abrirArchivo();
 				});
 			} else {
-				this.nombre = this.file.name;
-				this.ruta = this.file.path;
+				this.cargaInicial();
+				this.plantilla.abrirArchivo();
 			}
-
-			plantilla.abrirArchivo();
 		}
 	}
 
 	//TODO: tendrá que destruir el objecto Documento
 	ngOnDestroy(): void {
-		if(this.worker !== null) {
-			this.worker.terminate();
+		if(this.plantilla.worker !== null) {
+			this.plantilla.worker.terminate();
 		}
+	}
+
+	cargaInicial () {
+		this.plantilla.estadoCargaInicial.subscribe((estado: boolean) => {
+			console.log('estado carga inicial');
+			this.estadoCargaInicial = estado;
+			this.cdr.detectChanges();
+		});
+
+		this.plantilla.progresoCargaInicial.subscribe((progreso: number) => {
+			this.progresoCargaInicial = progreso;
+			this.cdr.detectChanges();
+		});
+
+		this.plantilla.vista.subscribe((vista: Blob | string) => {
+			if(vista instanceof Blob) {
+				const reader = new FileReader();
+				reader.readAsDataURL(vista);
+				reader.onload = () => {
+					const view = document.getElementById('contentContainer');
+					const imgElement = document.createElement('img');
+					imgElement.src = reader.result as string;
+					imgElement.alt = 'Cargando...';
+					imgElement.style.width = '100%';
+					view.innerHTML = '';
+					view.appendChild(imgElement);
+				};
+			}
+
+			if(typeof vista === 'string') {
+				const view = document.getElementById('contentContainer');
+				view.innerHTML = '<div id="contenido" style="width: 100%; height: 100%; overflow: hidden;">' + vista + '</div>';
+			}
+		});
 	}
 	
 	cambiaColor() {
-		for (const clave of this.claves) {
+		for (const clave of this.plantilla.claves) {
 			console.log('Clave: '+clave);
 			const campo = document.getElementById(clave) as HTMLInputElement;
 			campo.addEventListener('change', () => {
@@ -116,20 +143,20 @@ export class PlantillaComponent implements OnDestroy{
 
 	async creaDocumento() {
 		console.log('Comienza creaDocumento');
-		this.nuevoFile = this.file;
+		this.nuevoFile = this.plantilla.file;
 		this.estadoCreacionArchivo = true;
 		this.cdr.detectChanges();
 		const fecha:Date = new Date();
 		let numeroDocumento = ''; 
 		const parejas: Array<{ clave: string; valor: string }> = [];
 		const parejaStringArray:string[] = [];
-		for (const clave of this.claves) {
+		for (const clave of this.plantilla.claves) {
 			const ele = document.getElementById(clave) as HTMLInputElement;
 			let val:string;
-			if(clave === '$$$' && this.numeroDocumento === true) {
+			if(clave === '$$$' && this.plantilla.numeroDocumento === true) {
 				numeroDocumento = fecha.getFullYear().toString()+(fecha.getMonth()+1).toString()+fecha.getDate().toString()+fecha.getHours().toString()+fecha.getMinutes().toString()+fecha.getSeconds().toString();
 				val = numeroDocumento;
-			}else if (clave === '$$$' && this.numeroDocumento === false) {
+			}else if (clave === '$$$' && this.plantilla.numeroDocumento === false) {
 				val = ele.value;
 				numeroDocumento = ele.value;
 			}
@@ -147,7 +174,7 @@ export class PlantillaComponent implements OnDestroy{
  */
 		// Descomprime el archivo
 		console.log('Comienza a abrir el archivo');
-		const zip = await JSZip().loadAsync(this.file);
+		const zip = await JSZip().loadAsync(this.plantilla.file);
 		// Obtener la lista de archivos
 		console.log('Obtiene lista de archivos');
 		const archivos: string[] = Object.keys(zip.files);
@@ -173,16 +200,16 @@ export class PlantillaComponent implements OnDestroy{
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(this.nuevoFile);
 		let nombreFinal:string = '';
-		if(this.claves.includes('$$$')) {
-			nombreFinal = numeroDocumento+'_'+this.file.name;
+		if(this.plantilla.claves.includes('$$$')) {
+			nombreFinal = numeroDocumento+'_'+this.plantilla.file.name;
 		}else{
-			nombreFinal = 'rellenado_' + this.file.name;
+			nombreFinal = 'rellenado_' + this.plantilla.file.name;
 		}
 		link.download = nombreFinal; 
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
-		const status = new Status((this.SS.getStatus().length+1), this.file.name, parejaStringArray, numeroDocumento, Date()); 
+		const status = new Status((this.SS.getStatus().length+1), this.plantilla.file.name, parejaStringArray, numeroDocumento, Date()); 
 		this.SS.addStatus(status, true);
 		if(this.IPC.isElectron())
 			this.IPC.send('addStatus', status.toString());
@@ -262,7 +289,7 @@ export class PlantillaComponent implements OnDestroy{
 		const cliente: ClienteDinamico = this.CS.getClienteForId(id);
 		console.log('Cliente obtenido: ' + cliente.toString());
 		for (const atributo of cliente.atributos) {
-			for (const clave of this.claves) {
+			for (const clave of this.plantilla.claves) {
 				if (clave === atributo.clave) {
 					const a = document.getElementById(clave) as HTMLInputElement;
 					a.value = atributo.valor;
