@@ -36,6 +36,8 @@ export class HomeComponent implements OnInit {
 				this.cdr.detectChanges();
 			});
 			const selector = document.createElement('button');
+			selector.type = 'submit';
+			selector.id = 'plantilla';
 			selector.innerText = 'Elige una carpeta';
 			selector.addEventListener('click', () => this.abreDialog());
 			const dom = document.getElementById('selector');
@@ -44,6 +46,7 @@ export class HomeComponent implements OnInit {
 			const selector = document.createElement('input');
 			selector.type = 'file';
 			selector.name = 'plantillas';
+			selector.id = 'plantilla';
 			selector.webkitdirectory = true;
 			selector.multiple = true;
 			selector.onchange = () => {

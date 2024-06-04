@@ -7,4 +7,10 @@ bootstrapApplication(AppComponent, {
 	providers: [provideProtractorTestingSupport(), provideRouter(routes)],
 }).catch((err) => console.error(err));
 
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+	document.body.classList.add('modo-oscuro');
+	//cambiaEstilo.textContent = 'Modo Claro';
+}
+
+
   

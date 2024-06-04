@@ -95,10 +95,10 @@ function createWindow () {
     mainWindow.loadFile("ng/dist/browser/index.html");
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    /* mainWindow.webContents.openDevTools();
     mainWindow.webContents.on("did-frame-finish-load", () => {
         mainWindow.webContents.setZoomFactor(1.5); 
-    });
+    }); */
 
     // Registra un atajo de teclado global para abrir las herramientas de desarrollo
     globalShortcut.register("CommandOrControl+Alt+I", () => {

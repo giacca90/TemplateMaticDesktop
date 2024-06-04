@@ -1,3 +1,58 @@
 /* You can add global styles to this file, and also import other style files */
 @import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 @import '../node_modules/@ng-select/ng-select/scss/material.theme.scss';
+
+:root {
+	--color-fondo-claro: rgba(255, 255, 255, 0.5);
+	--color-texto-claro: black;
+	--color-fondo-oscuro: rgba(0, 0, 0, 0.850);
+	--color-texto-oscuro: #ffffff;
+	--color-background-input: #c8c8c847;
+}
+
+body {
+	background-color: var(--color-fondo-claro);
+	color: var(--color-texto-claro);
+	transition: background-color 0.3s, color 0.3s;
+}
+
+body.modo-oscuro {
+	background-color: var(--color-fondo-oscuro);
+	color: var(--color-texto-oscuro);
+}
+
+body.modo-oscuro .header {
+	background-color: blue;
+}
+
+body.modo-oscuro button  {
+	color: #ffffff
+}
+
+body.modo-oscuro button:hover {
+	color: #ffffff70
+}
+
+body.modo-oscuro input[type="text"] {
+	color: #ffffff;
+	background-color: #ffffff70;
+
+}
+
+body.modo-oscuro input[type="text"]::placeholder {
+  color: #c0c0c0;
+}
+
+body.modo-oscuro .creaDocumento {
+	background-color: #ffffff70;
+	color: #ffffff;
+
+}
+
+body.modo-oscuro button[type="submit"] {
+	color: #ffffff;
+	background-color: #ffffff70;
+
+
+
+}
