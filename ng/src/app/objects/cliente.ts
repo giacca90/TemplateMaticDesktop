@@ -1,25 +1,40 @@
 export class ClienteDinamico {
-	public atributos:{clave:string, valor:string}[] = [];
-	id:number;
+	private atributos: Map<string, string> = new Map<string, string>();
+	private id: number;
 
-	constructor(_claves:string[]) {
-		for(const _clave of _claves) {
-			this.atributos.push({clave: _clave, valor:''});
-		}
+	constructor(_claves: string[], _valores: string[]) {
+
+		_claves.map((clave, index) => {
+			const valor: string = _valores[index];
+			this.atributos.set(clave, valor);
+		});
+
+		this.atributos.forEach((val, key) => {
+			console.log('CLIENTE: Dato: '+ key +' Valor: '+val);
+		});
 	}
 
-	addValores(_valores:string[], _id:number) {
+	getId() {
+		return this.id;
+	}
+
+	addValores(_valores: string[], _id: number) {
 		this.id = _id;
-		for(let i=0; i<_valores.length; i++) {
+		for (let i = 0; i < _valores.length; i++) {
 			this.atributos[i].valor = _valores[i];
 		}
 	}
 
+	getAtributos() {
+		return this.atributos;
+	}
+
 	toString() {
-		let result:string = '';
-		for(const valor of this.atributos) {
-			result = result + valor.clave + ': ' + valor.valor + '; ';
-		}
+		let result: string = '';
+		this.atributos.forEach((_val, _key) => {
+			result = result + _key + ': ' + _val + '; ';
+		});
 		return result;
 	}
+
 }

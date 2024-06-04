@@ -24,7 +24,7 @@
                     @if(this.cortina) {
                         <div class="cortina">
                             @for(cliente of this.clientesTemporales; track cliente) {
-                                <div (click)="completa(cliente.id)">{{cliente.toString()}}</div>
+                                <div (click)="completa(cliente.getId())">{{cliente.toString()}}</div>
                             }
                         </div>
                     }

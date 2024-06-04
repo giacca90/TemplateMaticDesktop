@@ -11,16 +11,16 @@
         <table>
         <thead>
             <tr>
-                @for(atributo of clientes[0].atributos; track atributo) {
-                    <th>{{atributo.clave}}</th>
+                @for(atributo of clientes[0].getAtributos().keys(); track atributo) {
+					<th>{{atributo}}</th>
                 }
             </tr>
         </thead>
         
             @for(cliente of clientes; track cliente) {
                 <tbody>
-                    @for(valor of cliente.atributos; track valor) {
-                        <td>{{valor.valor}}</td>
+                    @for(valor of cliente.getAtributos(); track valor) {
+                        <td>{{valor[1]}}</td>
                     }
                 </tbody>
             }

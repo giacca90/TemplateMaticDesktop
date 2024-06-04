@@ -14,7 +14,7 @@ export class ClientesService {
 
 	getClienteForId(id:number) {
 		for(const cliente of this.clientes) {
-			if(cliente.id === id) {
+			if(cliente.getId() === id) {
 				return cliente;
 			}
 		}

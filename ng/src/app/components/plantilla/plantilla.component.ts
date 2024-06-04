@@ -246,17 +246,32 @@ export class PlantillaComponent implements OnDestroy {
 	completa(id: number) {
 		const cliente: ClienteDinamico = this.CS.getClienteForId(id);
 		console.log('Cliente obtenido: ' + cliente.toString());
-		for (const atributo of cliente.atributos) {
+		const atributos: Map<string, string> = cliente.getAtributos();
+
+		for(const atributo of atributos.keys()) {
+			if(this.plantilla.claves.includes(atributo)) {
+				const a = document.getElementById(atributo) as HTMLInputElement;
+				a.value = atributos.get(atributo);
+				a.classList.remove('campoVacio');
+				a.classList.add('campoValido');
+				a.removeAttribute('placeholder');
+			}
+		}
+
+
+		/* 
+		for (const atributo of cliente.getAtributos()) {
 			for (const clave of this.plantilla.claves) {
-				if (clave === atributo.clave) {
+				if (clave === atributo[1]) {
 					const a = document.getElementById(clave) as HTMLInputElement;
-					a.value = atributo.valor;
+					a.value = atributo[0];
 					a.classList.remove('campoVacio');
 					a.classList.add('campoValido');
 					a.removeAttribute('placeholder');
 				}
 			}
-		}
+		} */
+
 		this.cortina = false;
 		this.cdr.detectChanges();
 	}
