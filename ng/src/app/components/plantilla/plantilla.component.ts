@@ -102,7 +102,8 @@ export class PlantillaComponent implements OnDestroy {
 
 			if (typeof vista === 'string') {
 				const view = document.getElementById('contentContainer');
-				view.innerHTML = '<div id="contenido" style="width: 100%; height: 100%; overflow: hidden;">' + vista + '</div>';
+				view.innerHTML =
+				'<div id="contenido" style="width: 100%; height: 100%; overflow: hidden; background-color: white; color: black">' + vista + '</div>';
 			}
 		});
 	}
