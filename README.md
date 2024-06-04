@@ -22,7 +22,7 @@ Hay dos versiones de esta app, esta es la versión multiplataforma hecha con Ele
 
 >Todo en local, no se comparte ningún dato
 
-<img src="./demo.GIF" alt="Demostración">
+<img src="./demo.gif" alt="Demostración">
 
 ## Quieres probarla??
 
