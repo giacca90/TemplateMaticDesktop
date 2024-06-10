@@ -15,6 +15,10 @@ body {
 	transition: background-color 0.3s, color 0.3s;
 }
 
+html.modo-oscuro {
+	scrollbar-color: #787878 #4e4e4e;
+}
+
 body.modo-oscuro {
 	background-color: var(--color-fondo-oscuro);
 	color: var(--color-texto-oscuro);
@@ -24,31 +28,29 @@ body.modo-oscuro .header {
 	background-color: blue;
 }
 
-body.modo-oscuro button  {
-	color: #ffffff
+body.modo-oscuro button {
+	color: #ffffff;
 }
 
 body.modo-oscuro button:hover {
-	color: #ffffff70
+	color: #ffffff70;
 }
 
-body.modo-oscuro input[type="text"] {
+body.modo-oscuro input[type='text'] {
 	color: #ffffff;
 	background-color: #ffffff70;
-
 }
 
-body.modo-oscuro input[type="text"]::placeholder {
-  color: #c0c0c0;
+body.modo-oscuro input[type='text']::placeholder {
+	color: #c0c0c0;
 }
 
 body.modo-oscuro .creaDocumento {
 	background-color: #ffffff70;
 	color: #ffffff;
-
 }
 
-body.modo-oscuro button[type="submit"] {
+body.modo-oscuro button[type='submit'] {
 	color: #ffffff;
 	background-color: var(--color-background-button);
 }
