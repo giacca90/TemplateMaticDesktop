@@ -1,14 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>TemplateMatic</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body id="body">
-  <app-root></app-root>
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<title>TemplateMatic</title>
+		<base href="/" />
+		<!-- Agregar esto antes de cualquier otro contenido -->
+		<script>
+			(function () {
+				// Obtener tema del localStorage
+				const userTheme = localStorage.getItem('theme');
+				// Obtener preferencia del sistema
+				const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				// Determinar el tema a usar
+				const theme = userTheme || systemTheme;
 
+				// Aplicar el tema inmediatamente
+				if (theme === 'dark') {
+					document.documentElement.classList.add('modo-oscuro');
+					// También agregamos un estilo inline para prevenir cualquier flash
+					document.documentElement.style.colorScheme = 'dark';
+					// Opcional: agregar un atributo data para referencia
+					document.documentElement.setAttribute('data-theme', 'dark');
+				}
+			})();
+		</script>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/x-icon" href="favicon.ico" />
+	</head>
+	<body id="body">
+		<app-root></app-root>
+	</body>
 </html>

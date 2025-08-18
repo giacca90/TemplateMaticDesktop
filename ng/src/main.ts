@@ -1,10 +1,10 @@
 import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/platform-browser';
-import {provideRouter} from '@angular/router';
+import {provideRouter, withHashLocation} from '@angular/router';
 import {AppComponent} from './app/app.component';
 import {routes} from './app/app.routes';
 
 bootstrapApplication(AppComponent, {
-	providers: [provideProtractorTestingSupport(), provideRouter(routes)],
+	providers: [provideProtractorTestingSupport(), provideRouter(routes, withHashLocation())],
 }).catch((err) => console.error(err));
 
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {

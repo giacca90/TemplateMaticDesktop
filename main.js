@@ -44,7 +44,10 @@ function handleSquirrelEvent() {
 	const squirrelEvent = process.argv[1];
 	switch (squirrelEvent) {
 		case '--squirrel-install':
-			return;
+			spawnUpdate(['--createShortcut', exeName]);
+
+			setTimeout(app.quit, 1000);
+			return true;
 		case '--squirrel-updated':
 			// Optionally do things such as:
 			// - Add your .exe to the PATH

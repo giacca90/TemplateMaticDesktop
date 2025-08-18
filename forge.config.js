@@ -15,6 +15,7 @@ module.exports = {
 				authors: 'Giacca90',
 				description: 'App desktop de rellenado de plantillas',
 				setupIcon: 'favicon.ico',
+				manifest: './installer.manifest', // Incluir el manifesto personalizado
 			},
 		},
 		{
