@@ -7,7 +7,7 @@
 		"build": "ng build",
 		"watch": "ng build --watch --configuration development",
 		"test": "ng test",
-		"build:ghpages": "ng build --base-href /template-matic/ && cp -r dist/template-matic/browser/* docs/",
+		"build:ghpages": "ng build --base-href /template-matic/ && mkdir -p docs && cp -r dist/template-matic/browser/* docs/",
 		"deploy": "ng deploy --base-href=/template-matic/"
 	},
 	"private": true,
