@@ -29,5 +29,17 @@
 	</head>
 	<body id="body">
 		<app-root></app-root>
+		<script>
+			// Registro de visitas
+			fetch('https://giacca90.ddns.net:5011/log', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({
+					project: 'TemplateMatic', // Identifica tu proyecto
+					url: window.location.href,
+					referrer: document.referrer,
+				}),
+			}).catch((err) => console.error('No se pudo registrar visita:', err));
+		</script>
 	</body>
 </html>

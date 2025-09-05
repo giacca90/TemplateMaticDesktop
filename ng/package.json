@@ -1,6 +1,6 @@
 {
 	"name": "template-matic",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"scripts": {
 		"ng": "ng",
 		"start": "ng serve",
@@ -20,7 +20,6 @@
 		"@angular/platform-browser-dynamic": "^17.0.0",
 		"@angular/router": "^17.0.0",
 		"@ng-select/ng-select": "^12.0.4",
-		"@types/electron": "^1.6.10",
 		"bootstrap": "^5.3.2",
 		"file2html": "^0.2.0",
 		"file2html-ooxml": "^0.2.2",
@@ -33,6 +32,7 @@
 		"@angular-devkit/build-angular": "^17.0.5",
 		"@angular/cli": "^17.0.5",
 		"@angular/compiler-cli": "^17.0.0",
+		"@types/electron": "^1.6.10",
 		"@types/jasmine": "~5.1.0",
 		"@typescript-eslint/eslint-plugin": "^7.2.0",
 		"@typescript-eslint/parser": "^7.2.0",
